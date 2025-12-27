@@ -1,0 +1,19 @@
+import React from 'react'
+
+const CreateRoom = () => {
+    const create = async(e) => {
+        e.preventDefault()
+
+        const resp = await fetch("http://localhost:8080/create");
+        const { room_id } = await resp.json();
+        props.history.push(`/room/${room_id}`)
+    }
+    return (
+        <div>
+            hi
+            <button onClick={create}>Create Room</button>
+        </div>
+    )
+}
+
+export default CreateRoom

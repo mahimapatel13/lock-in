@@ -54,10 +54,12 @@ func Broadcaster(){
 
         for _, client := range AllRooms.Map[msg.RoomID]{
             if(client.Conn != msg.Client){
+
+                // if(client.Conn == websocket.Conn.)
                 err := client.Conn.WriteJSON(msg.Message)
 
                 if err != nil {
-                    log.Fatal(err)
+                    log.Println(err)
                     client.Conn.Close()
                 }
             }
@@ -108,6 +110,9 @@ func JoinRoomRequest(c *gin.Context){
         }
         msg.Client = ws
         msg.RoomID = roomID
+
+        log.Println("-----")
+        log.Println(msg.Message)
 
         broadcast <- msg
 

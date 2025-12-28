@@ -11,11 +11,11 @@ function App() {
   return (
     
       <div>
-        hello world--
+        hello world
         <BrowserRouter>
           <Routes>
-            <Route path="/" component={CreateRoom}></Route>
-            <Route path="/room/:roomID" component={Room}></Route>
+            <Route path="/room/create" element={<CreateRoom/>}></Route>
+            <Route path="/room/:roomID" element={<Room/>}></Route>
           </Routes>
         </BrowserRouter>
       </div>

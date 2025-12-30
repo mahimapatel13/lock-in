@@ -5,14 +5,18 @@ import (
 	"context"
 	// "fmt"
 	// "fmt"
-	"lock-in/internal/api/rest/router"
 	"lock-in/internal/api/rest/handlers"
+	"lock-in/internal/api/rest/router"
+	"lock-in/internal/config"
 
-	"lock-in/internal/domain/signalling"
+	"lock-in/internal/infrastructure/database/postgres/repositories"
+	"lock-in/internal/domain/email"
+	"lock-in/internal/domain/study_room"
+	"lock-in/internal/worker/email"
 
 	"os"
-    "syscall"
-    "os/signal"
+	"os/signal"
+	"syscall"
 	"time"
 
 	// "log"
@@ -25,8 +29,34 @@ import (
 )
 
 func main(){
-    signalling.AllRooms.Init()
+    study_room.AllRooms.Init()
 
+	log.Println("Reading .env")
+	cfg := config.LoadEnv()
+	emailWorker := email_worker.NewEmailWorkerPool(cfg.SMTPConfig)
+
+	for w := 1; w <= 10; w++ {
+        go emailWorker.Worker(w)
+    }
+
+	ctx := context.Background()
+
+	emailRepo := repositories.NewEmailRepository(&emailWorker)
+	emailSevice := email.NewService(emailRepo)
+
+	var to []string
+	to = append(to, "rgpvmahima@gmail.com")
+
+	msg := email.Email{
+		To: to,
+		Subject: "notice me",
+		Body: "hiiii :))",
+
+	}
+
+	for j := 1; j< 25; j++{
+		emailSevice.SendEmail(ctx, msg)
+	}
 
     // db, err := pgxpool.NewConfig()
 

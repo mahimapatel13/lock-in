@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
+import CountDownTimer from './CountDown'
 
 const Room = () => {
-
   const { roomID } = useParams();
   const wsRef = useRef(null);
   const userVideo = useRef();
@@ -29,7 +29,7 @@ const Room = () => {
     } catch(err){
       console.log(err)
     }
-  };
+};
 
   useEffect(() =>{
     openCamera().then((stream) => {
@@ -39,85 +39,100 @@ const Room = () => {
         console.log("------------------hii-------------------")
 
         webSocketRef.current = new WebSocket(
-          `ws://localhost:8080/api/v1/room/join/roomID=${roomID}`
+          `ws://localhost:8080/api/v1/room/join/${roomID}`
         );
 
         webSocketRef.current.addEventListener("open", () => {
-          console.log("established ws conn")
+          console.log("sending..")
           webSocketRef.current.send(JSON.stringify({join: "true"}))
         });
 
+        
         webSocketRef.current.addEventListener("message", async (e) =>{
           const message = JSON.parse(e.data);
+          console.log(message)
 
           if(message.join){
-            console.log("user joined")
             callUser();
           }
-          
+
           if(message.offer){
-            console.log("accepting offer creating answer")
-            handleOffer(message.offer)
+            handleOffer(message.offer);
           }
 
-          if (message.answer){
+          if(message.answer){
             console.log("Receiving Answer");
-            console.log("local: ", peerRef.current.localDescription);
-            peerRef.current.setRemoteDescription(new RTCSessionDescription(message.answer));
-            console.log("remote: ", peerRef.current.remoteDescription);
-
+            peerRef.current.setRemoteDescription(
+              new RTCSessionDescription(message.answer)
+            )
           }
 
           if(message.iceCandidate){
-            console.log("Recieving and adding ice candidate");
+            console.log("Receing and Adding Ice Candidate");
             try{
-              await peerRef.current.addIceCandidate(message.iceCandidate)
-            }catch(err){
-              console.log("Error receving ICE candidate", err)
+              await peerRef.current.addIceCandidate(
+                message.iceCandidate
+              );
+            } catch (err){
+              console.log("Error Receiving ICE Candidate", err);
             }
           }
-
-
-          
-        })
+        
+        });
     });
 
+
+    const int = setInterval(() => {
+      webSocketRef.current.send(JSON.stringify({test: "true"}))
+    }, 5000)
   });
 
 
   //this fn ic being called somehow
   const handleOffer = async (offer) => {
-    console.log("received offer creating answer")
-   
-    peerRef.current = createPeer();
+    console.log("Received Offer, Creating Answer")
+
+    // if(peerRef.current){
+    //   console.log("PC exists.")
+    // }else{
+      peerRef.current = createPeer();
   
-    await peerRef.current.setRemoteDescription(new RTCSessionDescription(offer));
+      console.log(offer)
 
-    userStream.current.getTracks().forEach((track) => {
-      peerRef.current.addTrack(track, userStream.current);
-    });
+      await peerRef.current.setRemoteDescription(
+        offer
+      );
 
-    const answer = await peerRef.current.createAnswer();
-    await peerRef.current.setLocalDescription(answer);
+      userStream.current.getTracks().forEach((track) => {
+        peerRef.current.addTrack(track, userStream.current);
+      });
 
-    console.log("local: ", peerRef.current.localDescription);     
-    console.log("remote: ", peerRef.current.remoteDescription);
-        
-    webSocketRef.current.send(
-      JSON.stringify({ answer: peerRef.current.localDescription})
-    );
+      const answer = await peerRef.current.createAnswer();
+      await peerRef.current.setLocalDescription(answer);
+
+      console.log("local: ", peerRef.current.localDescription);     
+      console.log("remote: ", peerRef.current.remoteDescription);
+          
+      webSocketRef.current.send(
+        JSON.stringify({ answer: peerRef.current.localDescription})
+      );
+    // }
     
   }
 
   const callUser = () =>{
       console.log("Calling Other User");
 
-      peerRef.current = createPeer();
+      // if(peerRef.current){
+      //   console.log("PC exists.")
+      // }else{
+        peerRef.current = createPeer();
 
-      userStream.current.getTracks().forEach((track) => {
-        peerRef.current.addTrack(track, userStream.current);
-      });
-    
+        userStream.current.getTracks().forEach((track) => {
+          peerRef.current.addTrack(track, userStream.current);
+        });
+      // }
+   
   }
 
   const createPeer = () => {
@@ -129,8 +144,20 @@ const Room = () => {
       peer.onnegotiationneeded = handleNegotiationNeeded;
       peer.onicecandidate = handleIceCandidateEvent;
       peer.ontrack= handleTrackEvent;
+      peer.onsignalingstatechange = handleStateChange;
+
+
       return peer
   };
+
+  const handleStateChange = async() => {
+    console.log("STATE________________CHANGE")
+    switch (peerRef.signalingState) {
+      case "stable":
+        console.log("-----------------STABLE---------");
+        break;
+    }
+  }
 
   const handleNegotiationNeeded = async() => {
     console.log("Creating Offer")
@@ -165,8 +192,10 @@ const Room = () => {
 
   return (
     <div>
+      <CountDownTimer/>
       <video autoPlay  controls={true} ref={userVideo}></video>
       <video autoPlay  controls={true} ref={partnerVideo}></video>
+      
     </div>
   )
 }

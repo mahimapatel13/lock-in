@@ -1,5 +1,5 @@
-.env
-.exe
+*.env
+*.exe
 
 # Editor directories and files
 .vscode/*

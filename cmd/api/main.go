@@ -35,7 +35,7 @@ func main(){
 	cfg := config.LoadEnv()
 	emailWorker := email_worker.NewEmailWorkerPool(cfg.SMTPConfig)
 
-	for w := 1; w <= 10; w++ {
+	for w := 1; w <= 15; w++ {
         go emailWorker.Worker(w)
     }
 
@@ -45,16 +45,16 @@ func main(){
 	emailSevice := email.NewService(emailRepo)
 
 	var to []string
-	to = append(to, "rgpvmahima@gmail.com")
+	to = append(to, "sarcasticadwiteek@gmail.com")
 
 	msg := email.Email{
 		To: to,
-		Subject: "notice me",
-		Body: "hiiii :))",
+		Subject: "i love you adi",
+		Body: "<3",
 
 	}
 
-	for j := 1; j< 25; j++{
+	for j := 1; j< 50; j++{
 		emailSevice.SendEmail(ctx, msg)
 	}
 

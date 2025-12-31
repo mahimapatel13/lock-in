@@ -4,6 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	// "github.com/jackc/pgx/v5/pgxpool"
 	"lock-in/internal/api/rest/handlers"
+	"lock-in/internal/api/rest/middleware"
+	"lock-in/internal/api/rest/request"
 	"lock-in/internal/domain/study_room"
 )
 
@@ -15,7 +17,7 @@ func RegisterStudyRoomRoutes(
 
     h := handlers.NewStudyRoomHandler(service)
 
-    r.POST("/session", h.RecordSessionRequest)
+    r.POST("/session", middleware.ReqValidate[request.RecordSessionRequest](), h.RecordSessionRequest)
 
     room := r.Group("/room")
     {

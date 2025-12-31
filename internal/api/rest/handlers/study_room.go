@@ -138,21 +138,19 @@ func(h *StudyRoomHandler) JoinRoomRequest(c *gin.Context) {
 func(h *StudyRoomHandler) RecordSessionRequest (c *gin.Context){
     
     log.Println("Handling RecordSessionRequest")
-    var req request.RecordSessionRequest 
-    err := c.ShouldBindJSON(&req)
 
-    if err != nil {
-        log.Println("Error reading request body: ", err)
-        c.JSON(http.StatusNotFound, gin.H{"error": err})
-    }
+    req := request.GetReqBody[request.RecordSessionRequest](c)
 
+	log.Println(req.SessionDuration)
+	log.Println(req.SessionType)
+   
     session := study_room.Session{
         Type: study_room.SessionType(req.SessionType),
-        Duration: req.SesionDuration,
+        Duration: uint32(req.SessionDuration),
         // UserID: ,
     }
 
-    err = h.service.RecordSession(c.Request.Context(),session)
+    err := h.service.RecordSession(c.Request.Context(),session)
 
     if err != nil {
         log.Println("Error while recording the session details: ", err)
@@ -164,3 +162,4 @@ func(h *StudyRoomHandler) RecordSessionRequest (c *gin.Context){
         "message": "Recorded Session Succesfully!",
     } )
 }
+

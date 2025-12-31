@@ -5,13 +5,16 @@ import (
 	"context"
 	// "fmt"
 	// "fmt"
+	// "fmt"
 	"lock-in/internal/api/rest/handlers"
 	"lock-in/internal/api/rest/router"
 	"lock-in/internal/config"
 
-	"lock-in/internal/infrastructure/database/postgres/repositories"
-	"lock-in/internal/domain/email"
+	// "lock-in/internal/domain/email"
 	"lock-in/internal/domain/study_room"
+	// "lock-in/internal/infrastructure/database/postgres/repositories"
+	"lock-in/internal/infrastructure/database/postgres/pgx"
+
 	"lock-in/internal/worker/email"
 
 	"os"
@@ -25,40 +28,43 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	// "golang.org/x/crypto/bcrypt"
 	// "github.com/jackc/pgx/v5/pgxpool"
 )
 
 func main(){
+
     study_room.AllRooms.Init()
 
 	log.Println("Reading .env")
 	cfg := config.LoadEnv()
 	emailWorker := email_worker.NewEmailWorkerPool(cfg.SMTPConfig)
 
-	for w := 1; w <= 15; w++ {
-        go emailWorker.Worker(w)
-    }
+	// for w := 1; w <= 15; w++ {
+    //     go emailWorker.Worker(w)
+    // }
 
 	ctx := context.Background()
 
-	emailRepo := repositories.NewEmailRepository(&emailWorker)
-	emailSevice := email.NewService(emailRepo)
+	// emailRepo := repositories.NewEmailRepository(&emailWorker)
+	// emailSevice := email.NewService(emailRepo)
 
-	var to []string
-	to = append(to, "sarcasticadwiteek@gmail.com")
+	// var to []string
+	// to = append(to, "rgpvmahimak@gmail.com")
 
-	msg := email.Email{
-		To: to,
-		Subject: "i love you adi",
-		Body: "<3",
+	// msg := email.Email{
+	// 	To: to,
+	// 	Subject: "hi",
+	// 	Body: "!!",
 
-	}
+	// }
 
-	for j := 1; j< 50; j++{
-		emailSevice.SendEmail(ctx, msg)
-	}
+	// for j := 1; j< 50; j++{
+	// 	emailSevice.SendEmail(ctx, msg)
+	// }
 
-    // db, err := pgxpool.NewConfig()
+
+    db := pgx_pool.NewConn(ctx, cfg.DatabaseConfig)	
 
     r := gin.New()
 	r.Use(gin.Logger(), gin.Recovery())
@@ -67,10 +73,10 @@ func main(){
 	// Health check endpoint with database connectivity check
 	r.GET("/health", func(c *gin.Context) {
 		// Check database connectivity
-		// if err := db.Ping(c.Request.Context()); err != nil {
-		// 	c.JSON(http.StatusServiceUnavailable, gin.H{"status": "database unavailable", "error": err.Error()})
-		// 	return
-		// }
+		if err := db.Ping(c.Request.Context()); err != nil {
+			c.JSON(http.StatusServiceUnavailable, gin.H{"status": "database unavailable", "error": err.Error()})
+			return
+		}
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
 
@@ -78,7 +84,7 @@ func main(){
 	go handlers.Broadcaster()
 
 	// Register all routes
-	router.RegisterRoutes(r)
+	router.RegisterRoutes(r,db, &emailWorker)
 
     	// Configure server with timeouts
 	srv := &http.Server{

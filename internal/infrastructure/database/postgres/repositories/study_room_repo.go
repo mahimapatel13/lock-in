@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"lock-in/internal/domain/study_room"
+	"log"
 )
 
 
@@ -17,5 +18,6 @@ func NewStudyRoomRepository() study_room.Repository {
 
 // RecordSessionDetails makes db entry for session details
 func (r *studyRoomRepository) RecordSessionDetails(ctx context.Context, session study_room.Session) error{
+    log.Println("hihihih")
     return nil
 }

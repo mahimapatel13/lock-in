@@ -22,6 +22,7 @@ type SMTPConfig struct {
 	Sender     string
 }
 type DatabaseConfig struct {
+	Port         string
 	User         string
 	Password     string
 	DatabaseName string
@@ -63,6 +64,7 @@ func loadDBConfig() DatabaseConfig {
 	name := getEnvValue("DB_NAME", "DEFUALT_DB_NAME")
 	host := getEnvValue("DB_HOST", "DEFAULT_DB_HOST")
 	addr := getEnvValue("DB_ADDR", "DEFAULT_DB_ADDR")
+	port := getEnvValue("DB_PORT", "DEFAULT_DB_PORT")
 
 	dbConfig := DatabaseConfig{
 		User:         user,
@@ -70,6 +72,7 @@ func loadDBConfig() DatabaseConfig {
 		DatabaseName: name,
 		Host:         host,
 		Address:      addr,
+		Port:         port,
 	}
 
 	return dbConfig

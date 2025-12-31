@@ -21,14 +21,6 @@ func(s *service) RecordSession (ctx context.Context, session Session) error {
     
     log.Println("Recording Session Details")
 
-    // Check if user exists
-    // _, err := s.UserService.GetUser(session.UserID)
-
-    // if err != nil {
-    //     log.Println("Error while retrieve user: ", err)
-    //     return err
-    // }
-
     // User exists, save the record
     err := s.repo.RecordSessionDetails(ctx, session)
 
@@ -41,8 +33,10 @@ func(s *service) RecordSession (ctx context.Context, session Session) error {
     return nil
 }
 
-func NewService() Service {
-    return &service{}
+func NewService(repo Repository) Service {
+    return &service{
+        repo: repo,
+    }
 }
 
 // Init initialises the RoomMap struct

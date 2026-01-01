@@ -61,11 +61,7 @@ func(h *ProfileHandler) Login (c *gin.Context){
     }
 
     // TODO: Return JWT token in header
-    token := auth.GenerateJWTToken(user.UUID)
-
-    log.Println(token)
-
-    c.Header("Authorization", token)
+    auth.SetAccessToken(c, user.UUID)
 
     //
     c.JSON(http.StatusOK, gin.H{
@@ -82,32 +78,26 @@ func(h *ProfileHandler) GetUser(c *gin.Context){
     log.Println("Handling GetUser Request")
 
     // read uuid from JWT
-    claims, ok := c.Get("user_id")
+    uuid, err := auth.GetUser(c)
 
-    if !ok {
-        c.JSON(404,"noo")
-        return
+    if err != nil || uuid == nil {
+        c.JSON(http.StatusBadRequest, gin.H{
+            "error": "User not authorized",
+        })
+        return 
     }
 
-    log.Println(claims)
-    c.JSON(200, "no")
+    user, err := h.service.GetUserByUUID(c.Request.Context(),*uuid)
 
-    // // get user from uuid
+    if err != nil || user == nil{
+        c.JSON(http.StatusInternalServerError, gin.H{
+            "error": "Error in retreiving user details",
+        })
+    }
 
-    // user, err :=h.service.GetUserByUUID(uuid)
-
-    // if err != nil {
-    //     c.JSON(http.StatusBadRequest, gin.H{"error": err})
-    //     return
-    // }
-
-    // // TODO 
-
-    // c.JSON(http.StatusOK, gin.H{
-    //     "message": "Login succesfull",
-    //     "username": user.Username,
-    //     "email": user.Email,
-    //     "uuid": user.UUID,
-    // })
+    c.JSON(http.StatusOK, gin.H{
+        "message": "Login succesfull",
+        "user": user,
+    })
 }
 

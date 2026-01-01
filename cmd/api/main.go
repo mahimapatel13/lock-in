@@ -6,6 +6,7 @@ import (
 	// "fmt"
 	// "fmt"
 	// "fmt"
+	"lock-in/internal/api/rest/auth"
 	"lock-in/internal/api/rest/handlers"
 	"lock-in/internal/api/rest/router"
 	"lock-in/internal/config"
@@ -39,30 +40,14 @@ func main(){
 	log.Println("Reading .env")
 	cfg := config.LoadEnv()
 	emailWorker := email_worker.NewEmailWorkerPool(cfg.SMTPConfig)
+	log.Println(cfg)
 
-	// for w := 1; w <= 15; w++ {
-    //     go emailWorker.Worker(w)
-    // }
+
+	for w := 1; w <= 3; w++ {
+        go emailWorker.Worker(w)
+    }
 
 	ctx := context.Background()
-
-	// emailRepo := repositories.NewEmailRepository(&emailWorker)
-	// emailSevice := email.NewService(emailRepo)
-
-	// var to []string
-	// to = append(to, "rgpvmahimak@gmail.com")
-
-	// msg := email.Email{
-	// 	To: to,
-	// 	Subject: "hi",
-	// 	Body: "!!",
-
-	// }
-
-	// for j := 1; j< 50; j++{
-	// 	emailSevice.SendEmail(ctx, msg)
-	// }
-
 
     db := pgx_pool.NewConn(ctx, cfg.DatabaseConfig)	
 
@@ -80,13 +65,15 @@ func main(){
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
 
+	auth.AuthInit(cfg.JWTConfig)
+
 	handlers.AllRooms.Init()
 	go handlers.Broadcaster()
 
 	// Register all routes
 	router.RegisterRoutes(r,db, &emailWorker)
 
-    	// Configure server with timeouts
+    // Configure server with timeouts
 	srv := &http.Server{
 		Addr:         ":8080",
 		Handler:      r,

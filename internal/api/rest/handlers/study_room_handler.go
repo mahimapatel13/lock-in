@@ -90,6 +90,7 @@ func(h *StudyRoomHandler) JoinRoomRequest(c *gin.Context) {
 	if roomID == "" {
 		log.Println("roomID missing in URL parameters")
 		c.JSON(http.StatusNotFound, gin.H{"error": "roomID missing in URL parameters"})
+		return
 	}
 	log.Println("upgrading connection to ws")
 
@@ -155,6 +156,7 @@ func(h *StudyRoomHandler) RecordSessionRequest (c *gin.Context){
     if err != nil {
         log.Println("Error while recording the session details: ", err)
         c.JSON(http.StatusNotFound, gin.H{"error": err})
+		return
     }
 
 

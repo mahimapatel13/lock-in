@@ -11,19 +11,20 @@ import (
 )
 
 type profileRepository struct{
-    dbpool *pgxpool.Pool
+    pool *pgxpool.Pool
 }
 
-func NewProfileRepository(dbpool *pgxpool.Pool) profile.Repository{
+func NewProfileRepository(pool *pgxpool.Pool) profile.Repository{
     return &profileRepository{
-        dbpool: dbpool,
+        pool: pool,
     }
 }
 
-func (r *profileRepository) RegisterUser(ctx context.Context, user profile.CreateUserRequest, pass []byte) error{
+func (r *profileRepository) RegisterUser(ctx context.Context, user profile.CreateUserRequest, pass string) error{
 
-    _, err := r.dbpool.Exec(ctx,
-        `INSERT INTO users(username, email, hashed_password) VALUES ($1, $2, $3)`,
+    log.Println("Executing query in register user")
+    _, err := r.pool.Exec(ctx,
+        `INSERT INTO user_schema.users(username, email, hashed_password) VALUES ($1, $2, $3)`,
         user.Username, 
         user.Email, 
         pass,
@@ -41,12 +42,11 @@ func(r *profileRepository) GetUserByUIID(ctx context.Context, id uuid.UUID) (*pr
     
     var user profile.User
 
-    var pass []byte
 
-    err := r.dbpool.QueryRow(ctx, "SELECT username, email, hashed_password, uuid FROM users where uuid = $1", id).Scan(
+    err := r.pool.QueryRow(ctx, "SELECT username, email, hashed_password, uuid FROM user_schema.users where uuid = $1", id).Scan(
         &user.Username,
         &user.Email,
-        pass,
+        &user.Password,
         &user.UUID,
     )
 
@@ -61,18 +61,58 @@ func(r *profileRepository) GetUserByUIID(ctx context.Context, id uuid.UUID) (*pr
             return nil, err
         }
     }
-
-    user.Password = string(pass)
     
     return &user, nil
 }
 func(r *profileRepository) GetUserByUsername(ctx context.Context, username string) (*profile.User, error){
+    var user profile.User
 
-    return nil, nil
+    err := r.pool.QueryRow(ctx, "SELECT username, email, hashed_password, uuid FROM user_schema.users where username = $1", username).Scan(
+        &user.Username,
+        &user.Email,
+        &user.Password,
+        &user.UUID,
+    )
+
+    if err != nil {
+        if err == pgx.ErrNoRows {
+            // No row found
+            log.Printf("No rows with uuid: %v found", username)
+            return nil, err
+        } else {
+            // Handle other errors
+            log.Println("Error in retreiving user id with username: ", username)
+            return nil, err
+        }
+    }
+    
+    return &user, nil
 }
 func(r *profileRepository) GetUserByEmail(ctx context.Context, email string) (*profile.User, error){
 
-    return nil, nil
+    var user profile.User
+
+    err := r.pool.QueryRow(ctx, "SELECT username, email, hashed_password, uuid FROM user_schema.users where email = $1", email).Scan(
+        &user.Username,
+        &user.Email,
+        &user.Password,
+        &user.UUID,
+    )
+
+    if err != nil {
+        if err == pgx.ErrNoRows {
+            // No row found
+            log.Printf("No rows with uuid: %v found", email)
+            return nil, err
+        } else {
+            // Handle other errors
+            log.Println("Error in retreiving user id with email: ", email)
+            return nil, err
+        }
+    }
+
+    
+    return &user, nil
 }
 
 

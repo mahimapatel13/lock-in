@@ -10,7 +10,7 @@ type CreateUserRequest struct {
     Username string
 }
 type User struct {
-	UUID      *uuid.UUID
+	UUID      uuid.UUID
 	Email     string
 	Username  string
     Password  string 

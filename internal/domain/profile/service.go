@@ -148,6 +148,8 @@ func (s *service) RegisterUser(ctx context.Context, user CreateUserRequest) erro
     log.Println("Making password")
     pass := makePassword();
 
+    log.Println("PAss", pass)
+
     log.Println("Hashing password")
     hashedPass, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.DefaultCost)
 
@@ -156,7 +158,7 @@ func (s *service) RegisterUser(ctx context.Context, user CreateUserRequest) erro
         return err
     }
 
-    err = s.repo.RegisterUser(ctx, user, hashedPass)
+    err = s.repo.RegisterUser(ctx, user, string(hashedPass))
 
     if err != nil{
         log.Println("Error in registering user.")

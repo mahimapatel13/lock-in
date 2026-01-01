@@ -2,7 +2,10 @@ package router
 
 import (
 	// "lock-in/internal/domain/email"
+	"lock-in/internal/domain/email"
+	"lock-in/internal/domain/profile"
 	"lock-in/internal/domain/study_room"
+
 	// "lock-in/internal/domain/profile"
 
 	"lock-in/internal/infrastructure/database/postgres/repositories"
@@ -21,16 +24,15 @@ func RegisterRoutes(
     // API versioning
     v1 := r.Group("/api/v1")
 
-	// emailRepo := repositories.NewEmailRepository(emailWorker)
-	// emailService := email.NewService(emailRepo)
+	emailRepo := repositories.NewEmailRepository(emailWorker)
+	emailService := email.NewService(emailRepo)
 
-
-	// profileRepo := repositories.NewProfileRepository(pool)
-	// profileService := profile.NewService(profileRepo, emailService)
+	profileRepo := repositories.NewProfileRepository(pool)
+	profileService := profile.NewService(profileRepo, emailService)
 	
-
 	studyRoomRepo := repositories.NewStudyRoomRepository()
 	studyRoomService := study_room.NewService(studyRoomRepo)
 
 	RegisterStudyRoomRoutes(v1, studyRoomService)
+	RegisterProfileRoutes(v1, profileService)
 }

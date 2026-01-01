@@ -11,6 +11,7 @@ import (
 type Config struct {
 	DatabaseConfig DatabaseConfig
 	SMTPConfig     SMTPConfig
+	JWTConfig      JWTConfig
 }
 
 type SMTPConfig struct {
@@ -28,6 +29,10 @@ type DatabaseConfig struct {
 	DatabaseName string
 	Host         string
 	Address      string
+}
+
+type JWTConfig struct {
+	Secret string
 }
 
 func getEnvValue(key string, defaultValue string) string {
@@ -48,16 +53,27 @@ func LoadEnv() Config {
 	}
 	dbConfig := loadDBConfig()
 	smtpConfig := loadSMTPConfig()
+	jwtConfig := loadJWTConfig()
 
 	config := Config{
 		DatabaseConfig: dbConfig,
 		SMTPConfig:     smtpConfig,
+		JWTConfig: jwtConfig,
 	}
 
 	log.Println(config)
 	return config
 }
 
+func loadJWTConfig() JWTConfig {
+	secret := getEnvValue("JWT_SECRET", "DEFAULT_JWT_SECRET")
+
+	jwtConfig := JWTConfig{
+		Secret: secret,
+	}
+
+	return jwtConfig
+}
 func loadDBConfig() DatabaseConfig {
 	user := getEnvValue("DB_USER", "DEFAULT_DB_USER")
 	pass := getEnvValue("DB_PASS", "DEFAULT_DB_PASS")

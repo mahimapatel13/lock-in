@@ -60,7 +60,11 @@ func getErrorMsg(fe validator.FieldError) string {
     case "max":
         return "Max value is " + fe.Param()
     case "oneof":
-        return "Should be one of " + fe.Param()        
+        return "Should be one of " + fe.Param()
+    case "email":
+        return "Should be a valid email"
+    case "required_without":
+        return "The feild " + fe.Param() + "shouldnt be empty when this tag is empty"       
     }
     return "Unknown error"
 }

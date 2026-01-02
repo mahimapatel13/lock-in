@@ -2,7 +2,7 @@ import axios from "axios";
 import { logout, getAccessToken, setAccessToken } from "@/services/authService";
 
 const api = axios.create({
-    baseURL: "http://localhost:8080/api/v1",
+    baseURL: "https://supersensuously-frankable-arnold.ngrok-free.dev/api/v1",
     withCredentials: true, // sends HttpOnly cookie
 });
 
@@ -67,7 +67,7 @@ api.interceptors.response.use(
                     "/auth/refresh",
                     {},
                     {
-                        baseURL: "http://localhost:8080/api/v1",
+                        baseURL: "https://supersensuously-frankable-arnold.ngrok-free.dev/api/v1",
                         withCredentials: true,
                     }
                 );

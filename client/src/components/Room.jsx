@@ -1,8 +1,11 @@
 import { useEffect, useRef } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import CountDownTimer from './CountDown'
+import api from "@/utils/api"
+
 
 const Room = () => {
+  const navigate = useNavigate();
   const { roomID } = useParams();
   const wsRef = useRef(null);
   const userVideo = useRef();
@@ -24,9 +27,11 @@ const Room = () => {
     };
 
     try {
+      console.log("camm onnn")
       return await navigator.mediaDevices.getUserMedia(constraints);
 
     } catch(err){
+      console.log("no cammm :(((")
       console.log(err)
     }
 };
@@ -36,26 +41,32 @@ useEffect(() =>{
 
     const initializeRoom = async () => {
         try {
-            const response = await api.get(`/room/verify/${roomID}`);
-            
-            if (response.status === 200 && isMounted) {
-                const stream = await openCamera();
-                userVideo.current.srcObject = stream;
-                userStream.current = stream;
+            await api.post(`/room/verify/${roomID}`);
 
-                connectWebSocket();
-            }
+            const ticketResponse = await api.post(`/room/ticket/${roomID}`);
+            const { ticket } = ticketResponse.data;
+
+            if (!isMounted) return;
+
+            const stream = await openCamera();
+            userVideo.current.srcObject = stream;
+            userStream.current = stream;
+
+            setTimeout(() => {
+                connectWebSocket(ticket);
+            }, 100);
+
         } catch (err) {
-            console.error("HTTP Verification failed:", err);
-            navigate('/'); 
+            console.error("Can't enter room:", err);
+            navigate('/room/create'); 
         }
     };
 
-    const connectWebSocket = () => {
+    const connectWebSocket = (ticket) => {
         console.log("------------------hii-------------------")
 
         webSocketRef.current = new WebSocket(
-          `ws://localhost:8080/api/v1/room/join/${roomID}`
+          `wss://supersensuously-frankable-arnold.ngrok-free.dev/api/v1/room/ws/${ticket}`
         );
 
         webSocketRef.current.addEventListener("open", () => {

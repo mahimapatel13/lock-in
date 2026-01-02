@@ -21,9 +21,7 @@ const Room = () => {
 
     const constraints = {
       audio: false,
-      video: cameras.length > 0
-        ? { deviceId: cameras[0].deviceId }
-        : true
+      video: true
     };
 
     try {
@@ -95,13 +93,15 @@ useEffect(() =>{
           }
 
           if (message.iceCandidate) {
-            if (!peerRef.current || !peerRef.current.remoteDescription) {
-                console.log("Buffered ICE Candidate");
-                return; 
-            }
-            await peerRef.current.addIceCandidate(new RTCIceCandidate(message.iceCandidate));
+              try {
+                  // Ensure it's a real RTCIceCandidate object
+                  await peerRef.current.addIceCandidate(new RTCIceCandidate(message.iceCandidate));
+                  console.log("Successfully added ICE candidate");
+              } catch (err) {
+                  console.error("Error adding ICE candidate", err);
+              }
           }
-        
+                  
         });
     };
 
@@ -208,12 +208,22 @@ const callUser = async () => {
       peer.ontrack= handleTrackEvent;
       peer.onsignalingstatechange = handleStateChange;
 
+      peer.oniceconnectionstatechange = () => {
+          console.log("ICE Connection State:", peer.iceConnectionState);
+          if (peer.iceConnectionState === "connected") {
+              console.log("VIDEO SHOULD BE VISIBLE NOW!");
+          }
+      };
+
       return peer
   };
 
   const handleStateChange = () => {
       const state = peerRef.current?.signalingState;
       console.log("Signaling State:", state);
+      if (peerRef.current.iceConnectionState === "connected") {
+        console.log("VIDEO SHOULD BE VISIBLE NOW!");
+    }
   };
 
   const handleNegotiationNeeded = async() => {
@@ -242,10 +252,19 @@ const callUser = async () => {
       }
   }
 
-  const handleTrackEvent = (e) => {
-    console.log("Received Tracks")
-    partnerVideo.current.srcObject = e.streams[0]
-  }
+const handleTrackEvent = (e) => {
+    console.log("Received Tracks:", e.track.kind, e.streams);
+    
+    // Check if we have a stream, if not, create one
+    if (e.streams && e.streams[0]) {
+        partnerVideo.current.srcObject = e.streams[0];
+    } else {
+        // Fallback: Create a new MediaStream and add the track to it
+        console.log("No stream found, creating one from track");
+        const inboundStream = new MediaStream([e.track]);
+        partnerVideo.current.srcObject = inboundStream;
+    }
+};
 
   return (
     <div>

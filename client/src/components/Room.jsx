@@ -84,7 +84,7 @@ useEffect(() =>{
           }
 
           if(message.offer){
-            handleOffer(message.offer);
+            handleOffer(new RTCSessionDescription(message.offer));
           }
 
           if(message.answer){
@@ -94,15 +94,12 @@ useEffect(() =>{
             )
           }
 
-          if(message.iceCandidate){
-            console.log("Receing and Adding Ice Candidate");
-            try{
-              await peerRef.current.addIceCandidate(
-                message.iceCandidate
-              );
-            } catch (err){
-              console.log("Error Receiving ICE Candidate", err);
+          if (message.iceCandidate) {
+            if (!peerRef.current || !peerRef.current.remoteDescription) {
+                console.log("Buffered ICE Candidate");
+                return; 
             }
+            await peerRef.current.addIceCandidate(new RTCIceCandidate(message.iceCandidate));
           }
         
         });
@@ -148,20 +145,18 @@ useEffect(() =>{
     
   }
 
-  const callUser = () =>{
-      console.log("Calling Other User");
+const callUser = async () => {
+    console.log("Calling Other User");
+    peerRef.current = createPeer();
 
-      // if(peerRef.current){
-      //   console.log("PC exists.")
-      // }else{
-        peerRef.current = createPeer();
+    userStream.current.getTracks().forEach((track) => {
+        peerRef.current.addTrack(track, userStream.current);
+    });
 
-        userStream.current.getTracks().forEach((track) => {
-          peerRef.current.addTrack(track, userStream.current);
-        });
-      // }
-   
-  }
+    const myOffer = await peerRef.current.createOffer();
+    await peerRef.current.setLocalDescription(myOffer);
+    webSocketRef.current.send(JSON.stringify({ offer: myOffer }));
+};
 
   const createPeer = () => {
       console.log("Creating peer connection")
@@ -174,18 +169,13 @@ useEffect(() =>{
       peer.ontrack= handleTrackEvent;
       peer.onsignalingstatechange = handleStateChange;
 
-
       return peer
   };
 
-  const handleStateChange = async() => {
-    console.log("STATE________________CHANGE")
-    switch (peerRef.signalingState) {
-      case "stable":
-        console.log("-----------------STABLE---------");
-        break;
-    }
-  }
+  const handleStateChange = () => {
+      const state = peerRef.current?.signalingState;
+      console.log("Signaling State:", state);
+  };
 
   const handleNegotiationNeeded = async() => {
     console.log("Creating Offer")

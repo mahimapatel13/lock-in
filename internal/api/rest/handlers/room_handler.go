@@ -40,6 +40,7 @@ func(h *RoomHandler) GenerateTicket(c *gin.Context){
 	uuid, err := auth.GetUser(c)
 
 	if err != nil || uuid == nil {
+		log.Println("user not found bro")
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "User not authorized",
 		})
@@ -53,7 +54,8 @@ func(h *RoomHandler) GenerateTicket(c *gin.Context){
 		return
 	}
 
-
+	log.Println(roomID)
+	
 	ticket := h.ticketService.GenerateTicket(c.Request.Context(),*uuid, roomID)
 
 	c.JSON(http.StatusCreated, gin.H{
@@ -72,6 +74,8 @@ func (h *RoomHandler) VerifyRoom(c *gin.Context) {
 		return
 	}
 
+	log.Println(roomID)
+
 	_, err := h.roomService.Get(c.Request.Context(), roomID)
 
 	if err != nil {
@@ -82,7 +86,7 @@ func (h *RoomHandler) VerifyRoom(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusBadRequest, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"room_id" : roomID,
 	})
 }
@@ -126,6 +130,7 @@ func(h *RoomHandler) JoinRoomRequest(c *gin.Context) {
 		})
 	}
 
+
 	log.Println("upgrading connection to ws")
 
 	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
@@ -133,7 +138,7 @@ func(h *RoomHandler) JoinRoomRequest(c *gin.Context) {
 	if err != nil {
 		log.Fatal("Web Socket Upgrade Error: ", err)
         c.JSON(http.StatusNotFound, gin.H{"error": err})
-		ws.Close()  
+		return 
 	}
 
 	log.Println("upgraded conn")

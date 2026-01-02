@@ -84,13 +84,13 @@ useEffect(() =>{
           }
 
           if(message.offer){
-            handleOffer(new RTCSessionDescription(message.offer));
+            handleOffer(message.offer);
           }
 
           if(message.answer){
             console.log("Receiving Answer");
             peerRef.current.setRemoteDescription(
-              new RTCSessionDescription(message.answer)
+              message.answer
             )
           }
 

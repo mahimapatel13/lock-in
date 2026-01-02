@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/hex"
+	"log"
 	"sync"
 	"time"
 
@@ -43,9 +44,11 @@ func (tm *service) GenerateTicket(ctx context.Context, uuid uuid.UUID, roomID st
 }
 
 func(tm *service) ValidateTicket(ctx context.Context, ticket string)( TicketContext, bool){
+    log.Println("Validating ticket..")
     val, ok := tm.tickets.Load(ticket)
 
     if !ok {
+        log.Println("ticket doesn exisst!!!")
         return TicketContext{}, false
     }
 

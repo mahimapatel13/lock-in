@@ -80,6 +80,7 @@ func (s *service) Get(ctx context.Context, roomID string) ([]Participant, error)
 	participants, exists := s.allRooms.Map[roomID]
 
 	if !exists {
+		log.Println("Room not found")
 		// Return a clear error so your controller knows what happened
 		return nil, errors.New("room not found")
 	}
@@ -110,6 +111,8 @@ func (s *service) CreateRoom(ctx context.Context) string {
 	s.allRooms.Map[roomID] = []Participant{}
 
 	fmt.Println("returning")
+
+	log.Println(s.allRooms)
 	return roomID
 }
 

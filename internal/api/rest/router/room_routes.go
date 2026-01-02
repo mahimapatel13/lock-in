@@ -24,8 +24,9 @@ func RegisterRoomRoutes(
 	room := r.Group("/room")
 	{
 		room.POST("/create", middleware.JWTMiddleware(), h.CreateRoomRequest)
-		room.POST("/verify/:roomID", middleware.AuthMiddleware(),h.VerifyRoom)
-		room.GET("/ws/:ticket", middleware.JWTMiddleware(), h.JoinRoomRequest)
+		room.POST("/verify/:roomID", middleware.JWTMiddleware(),h.VerifyRoom)
+		room.POST("/ticket/:roomID", middleware.JWTMiddleware(), h.GenerateTicket)
+		room.GET("/ws/:ticket", h.JoinRoomRequest)
 		room.POST("/session",middleware.JWTMiddleware(),middleware.ReqValidate[request.RecordSessionRequest](), h.RecordSessionRequest)
 	}
 

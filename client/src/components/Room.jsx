@@ -31,11 +31,27 @@ const Room = () => {
     }
 };
 
-  useEffect(() =>{
-    openCamera().then((stream) => {
-        userVideo.current.srcObject = stream;
-        userStream.current = stream;
+useEffect(() =>{
+    let isMounted = true;
 
+    const initializeRoom = async () => {
+        try {
+            const response = await api.get(`/room/verify/${roomID}`);
+            
+            if (response.status === 200 && isMounted) {
+                const stream = await openCamera();
+                userVideo.current.srcObject = stream;
+                userStream.current = stream;
+
+                connectWebSocket();
+            }
+        } catch (err) {
+            console.error("HTTP Verification failed:", err);
+            navigate('/'); 
+        }
+    };
+
+    const connectWebSocket = () => {
         console.log("------------------hii-------------------")
 
         webSocketRef.current = new WebSocket(
@@ -79,13 +95,14 @@ const Room = () => {
           }
         
         });
-    });
+    };
+
+    initializeRoom();
+
+    return () => { isMounted = false; };
+  }, [roomID]);
 
 
-    const int = setInterval(() => {
-      webSocketRef.current.send(JSON.stringify({test: "true"}))
-    }, 5000)
-  });
 
 
   //this fn ic being called somehow

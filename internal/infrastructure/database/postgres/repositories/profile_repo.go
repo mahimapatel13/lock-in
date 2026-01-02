@@ -4,7 +4,9 @@ import (
 	"context"
 	"lock-in/internal/domain/profile"
 	"log"
-    // "encoding/json"
+	"time"
+
+	// "encoding/json"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -88,11 +90,34 @@ func(r *profileRepository) GetUserByUsername(ctx context.Context, username strin
     
     return &user, nil
 }
+
+func(r *profileRepository) GetToken(ctx context.Context, refresh string) (*uuid.UUID, error){
+    var uuid uuid.UUID
+
+    log.Println("Getting token from db..")
+    err := r.pool.QueryRow(ctx, "SELECT uuid FROM user_schema.refresh_tokens WHERE refresh_token=$1 AND expiration_date <", refresh, time.Now()).Scan(
+        &uuid,
+    )
+
+    if err != nil {
+        if err == pgx.ErrNoRows {
+            // No row found
+            log.Printf("No rows with hashed refresh: %v found in refresh token table", refresh)
+            return nil, err
+        } else {
+            // Handle other errors
+            log.Println("Error in retreiving user with hashed token:  ", refresh)
+            return nil, err
+        }
+    }
+
+    return &uuid, nil
+}
 func(r *profileRepository) GetUserByEmail(ctx context.Context, email string) (*profile.User, error){
 
     var user profile.User
 
-    err := r.pool.QueryRow(ctx, "SELECT username, email, hashed_password, uuid FROM user_schema.users where email = $1", email).Scan(
+    err := r.pool.QueryRow(ctx, "SELECT username, email, hashed_password, uuid FROM user_schema.users WHERE email = $1", email).Scan(
         &user.Username,
         &user.Email,
         &user.Password,

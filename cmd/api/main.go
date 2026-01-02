@@ -7,12 +7,12 @@ import (
 	// "fmt"
 	// "fmt"
 	"lock-in/internal/api/rest/auth"
-	"lock-in/internal/api/rest/handlers"
+	// "lock-in/internal/api/rest/handlers"
 	"lock-in/internal/api/rest/router"
 	"lock-in/internal/config"
 
 	// "lock-in/internal/domain/email"
-	"lock-in/internal/domain/study_room"
+	// "lock-in/internal/domain/study_room"
 	// "lock-in/internal/infrastructure/database/postgres/repositories"
 	"lock-in/internal/infrastructure/database/postgres/pgx"
 
@@ -28,6 +28,7 @@ import (
 
 	"log"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	// "golang.org/x/crypto/bcrypt"
 	// "github.com/jackc/pgx/v5/pgxpool"
@@ -35,7 +36,6 @@ import (
 
 func main(){
 
-    study_room.AllRooms.Init()
 
 	log.Println("Reading .env")
 	cfg := config.LoadEnv()
@@ -54,6 +54,16 @@ func main(){
     r := gin.New()
 	r.Use(gin.Logger(), gin.Recovery())
 
+	r.Use(cors.New(cors.Config{
+        AllowOrigins:     []string{"http://localhost:5173"},
+        AllowMethods:     []string{"POST", "GET", "OPTIONS", "PUT", "DELETE"},
+        AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+        // CRITICAL: This allows your Interceptor to read the token!
+        ExposeHeaders:    []string{"Authorization"}, 
+        AllowCredentials: true,
+        MaxAge:           12 * time.Hour,
+    }))
+
 	
 	// Health check endpoint with database connectivity check
 	r.GET("/health", func(c *gin.Context) {
@@ -66,9 +76,6 @@ func main(){
 	})
 
 	auth.AuthInit(cfg.JWTConfig)
-
-	handlers.AllRooms.Init()
-	go handlers.Broadcaster()
 
 	// Register all routes
 	router.RegisterRoutes(r,db, &emailWorker)

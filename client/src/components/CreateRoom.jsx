@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom"
-
+import api from "@/utils/api"
+import { getAccessToken, setAccessToken } from "../services/authService";
 
 
 const CreateRoom = () => {
@@ -10,13 +11,27 @@ const CreateRoom = () => {
     const create = async (e) => {
         e.preventDefault();
 
-        const resp = await fetch("http://localhost:8080/api/v1/room/create",{
-            method: "POST",
-        });
+        api.post("/room/create")
+            .then( res => {
+                console.log("Full Response Data:", res.data);
+                const roomID = res.data.room_id;
+                navigate(`/room/${roomID}`);
+            
+            })
+            .catch(err => {
+                if (err.response) {
+                    // The server responded with a status code (400, 401, 500, etc.)
+                    console.error("Server Error:", err.response.data);
+                } else if (err.request) {
+                    // The request was made but no response was received (CORS or Network issue)
+                    console.error("Network/CORS Error: No response received from server.");
+                } else {
+                    // Something happened in setting up the request or in the .then() block
+                    console.error("Local Code Error:", err.message);
+                }
+            });
         
-        const { room_id } =  await resp.json();
-
-        navigate(`/room/${room_id}`);
+       
     };
 
     return (

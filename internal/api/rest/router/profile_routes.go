@@ -17,10 +17,16 @@ func RegisterProfileRoutes(
 	h := handlers.NewProfileHandler(profileService)
 
 	// API versioning
-	auth := r.Group("profile")
+	auth := r.Group("auth")
 	{
-		auth.POST("/register", middleware.ReqValidate[request.RegisterUserRequest](),h.RegisterUser)
-		auth.POST("/login",middleware.ReqValidate[request.LoginRequest](), h.Login)
-		auth.GET("/user",middleware.JWTWithRefresh(), h.GetUser)
+		auth.POST("/register", middleware.ReqValidate[request.RegisterUserRequest](), h.RegisterUser)
+		auth.POST("/login", middleware.ReqValidate[request.LoginRequest](), h.Login)
+		auth.POST("/refresh", h.Refresh)
+	}
+
+	profile := r.Group("profile")
+	{
+		profile.GET("/user", middleware.JWTMiddleware(), h.GetUser)
+
 	}
 }

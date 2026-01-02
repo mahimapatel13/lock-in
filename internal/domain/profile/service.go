@@ -25,6 +25,7 @@ type Service interface{
     GetUserByUUID(ctx context.Context ,id uuid.UUID) (*User, error)
     GetUserByEmail(ctx context.Context ,email string) (*User, error)
     GetUserByUsername(ctx context.Context ,username string) (*User, error)
+    GetToken(ctx context.Context, refresh string) (*uuid.UUID, error)
 }
 
 func NewService(repo Repository, emailService email.Service) Service {
@@ -58,8 +59,8 @@ func(s *service) AuthenticateUser(ctx context.Context, pass string, username *st
         err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(pass))
 
         if err != nil {
-            // wrong pass
-            return nil, err
+            // wrong pass      
+            return nil, errors.New("Wrong Password")
         }
 
         return user, nil
@@ -78,10 +79,40 @@ func(s *service) AuthenticateUser(ctx context.Context, pass string, username *st
             // wrong pass
             return nil, err
         }
-
         return user, nil
     }
 }
+
+// GetToken return the user id associated with the refresh token stored in the db
+func(s *service) GetToken(ctx context.Context, refresh string) (*uuid.UUID, error){
+
+    log.Println("Fetching user for token ", refresh)
+
+    if refresh==""{
+        log.Println("Refresh Token empty")
+        return nil, errors.New("Refresh token is empty")
+    }
+
+    log.Println("Hashing refresh before saving in db")
+
+    hashedRefresh, err := bcrypt.GenerateFromPassword([]byte(refresh), bcrypt.DefaultCost)
+
+    if err != nil {
+        log.Println("Error in hashing refresh token")
+        return nil, err
+    }
+
+    uuid, err := s.repo.GetToken(ctx, string(hashedRefresh))
+
+
+    if err != nil {
+        log.Println("Error fetching user for token in the db")
+        return nil, err
+    }
+
+    return uuid, nil
+}
+
 
 // GetUserByUsername function returns user which matches with the given uuid
 func(s *service) GetUserByUUID(ctx context.Context, id uuid.UUID) (*User, error){
@@ -149,6 +180,16 @@ func (s *service) RegisterUser(ctx context.Context, user CreateUserRequest) erro
     pass := makePassword();
 
     log.Println("PAss", pass)
+    // Email Password to user
+
+    msg := email.Email{
+        To: []string{user.Email},
+        Subject: "Welcome to lock-in :)",
+        Body: fmt.Sprintf("Your password to log into your lock-in account is %v.", pass),
+
+    }
+
+    s.emailService.SendEmail(ctx,msg)
 
     log.Println("Hashing password")
     hashedPass, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.DefaultCost)

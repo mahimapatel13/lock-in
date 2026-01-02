@@ -5,6 +5,8 @@ import (
 	"lock-in/internal/domain/email"
 	"lock-in/internal/domain/profile"
 	"lock-in/internal/domain/study_room"
+	"lock-in/internal/domain/study_session"
+	"lock-in/internal/domain/ticket_manager"
 
 	// "lock-in/internal/domain/profile"
 
@@ -30,9 +32,13 @@ func RegisterRoutes(
 	profileRepo := repositories.NewProfileRepository(pool)
 	profileService := profile.NewService(profileRepo, emailService)
 	
-	studyRoomRepo := repositories.NewStudyRoomRepository()
-	studyRoomService := study_room.NewService(studyRoomRepo)
+	studySessionRepo := repositories.NewStudySessionRepository()
+	studySessionService := study_session.NewService(studySessionRepo)
 
-	RegisterStudyRoomRoutes(v1, studyRoomService)
+	studyRoomService := study_room.NewService()
+	
+	ticketService := ticket_manager.Newservice()
+
+	RegisterRoomRoutes(v1, studyRoomService,  studySessionService, ticketService)
 	RegisterProfileRoutes(v1, profileService)
 }

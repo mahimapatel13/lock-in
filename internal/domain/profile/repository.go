@@ -11,4 +11,5 @@ type Repository interface {
 	GetUserByUsername(ctx context.Context, username string) (*User, error)
 	GetUserByEmail(ctx context.Context, email string) (*User, error)
 	RegisterUser(ctx context.Context, user CreateUserRequest, pass string) error
+	GetToken(ctx context.Context, refresh string) (*uuid.UUID, error)
 }

@@ -3,6 +3,7 @@ package profile
 import (
     "github.com/google/uuid"
     "time"
+    "lock-in/internal/api/rest/response"
 )
 
 type CreateUserRequest struct {
@@ -16,4 +17,12 @@ type User struct {
     Password  string 
 	CreatedAt time.Time
     UpdatedAt time.Time
+}
+
+func (u User) ToResponse() response.LoginResponse {
+    return response.LoginResponse{
+        UUID: u.UUID,
+        Email: u.Email,
+        Username: u.Username,
+    }
 }

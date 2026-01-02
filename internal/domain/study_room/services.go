@@ -2,6 +2,7 @@ package study_room
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"math/rand"
@@ -10,91 +11,126 @@ import (
 )
 
 type service struct {
-    repo Repository
+	allRooms *roomMap
+	queue    chan BroadcastMsg
 }
 
-type Service interface{
-    RecordSession(ctx context.Context, session Session) error 
+type Service interface {
+	Get(ctx context.Context, roomID string) ([]Participant, error)
+	CreateRoom(ctx context.Context) string
+	InsertIntoRoom(ctx context.Context, roomID string, host bool, conn *websocket.Conn)
+	DeleteRoom(ctx context.Context, roomID string)
+	SendToBroadcast(msg BroadcastMsg)
 }
 
-func(s *service) RecordSession (ctx context.Context, session Session) error {
-    
-    log.Println("Recording Session Details")
 
-    // User exists, save the record
-    err := s.repo.RecordSessionDetails(ctx, session)
 
-    if err != nil {
-        log.Println("Error in recording session details: ", err)
-        return err
-    }
-
-    log.Println("Recorded Session Details successfully!")
-    return nil
+func NewService() Service {
+	var allRooms roomMap
+	allRooms.init()
+    var queue = make(chan BroadcastMsg)
+	s := &service{
+		allRooms: &allRooms,
+        queue: queue,
+	}
+	go s.broadcaster()
+	return s
 }
 
-func NewService(repo Repository) Service {
-    return &service{
-        repo: repo,
-    }
+func (s *service) SendToBroadcast(msg BroadcastMsg) {
+    s.queue <- msg
+    return
 }
 
-// Init initialises the RoomMap struct
-func (r *RoomMap) Init(){
-   r.Map = make(map[string][]Participant)
+func (s *service) broadcaster() {
+
+	for {
+		msg := <-s.queue
+
+		for _, client := range s.allRooms.Map[msg.RoomID] {
+
+			log.Println("------------------")
+			for key, value := range msg.Message {
+				log.Printf("Key: %s | Value: %v\n", key, value)
+				if key == "focus" {
+
+				} else if key == "break" {
+				}
+			}
+			// log.Println(client.Conn, msg.Client)
+			if client.Conn != msg.Client {
+				err := client.Conn.WriteJSON(msg.Message)
+
+				if err != nil {
+					log.Println(err)
+					client.Conn.Close()
+				}
+			}
+		}
+	}
+
 }
+
 // Get will return the array of participants in the room
-func(r *RoomMap) Get(roomID string) []Participant {
-    r.Mutex.RLock()
-    defer r.Mutex.RUnlock()
+func (s *service) Get(ctx context.Context, roomID string) ([]Participant, error) {
+	s.allRooms.Mutex.RLock()
+	defer s.allRooms.Mutex.RUnlock()
 
-    return r.Map[roomID]
+	// The "comma ok" idiom
+	participants, exists := s.allRooms.Map[roomID]
+
+	if !exists {
+		// Return a clear error so your controller knows what happened
+		return nil, errors.New("room not found")
+	}
+
+	return participants, nil
 }
 
 // CreateRoom generate a unique ID and return it -> insert in the hashmap
-func(r *RoomMap) CreateRoom() string {
-    r.Mutex.Lock()
-    defer r.Mutex.Unlock()
-    
-    fmt.Println("Create Room Service fn")
-    var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
+func (s *service) CreateRoom(ctx context.Context) string {
+	s.allRooms.Mutex.Lock()
+	defer s.allRooms.Mutex.Unlock()
 
-    fmt.Println("Making rune")
+	fmt.Println("Create Room Service fn")
+	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
 
-    b := make([]rune, 8)
+	fmt.Println("Making rune")
 
-    for i := range b{
-        b[i] = letters[rand.Intn(len(letters))]
+	b := make([]rune, 8)
 
-    }
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
 
-    fmt.Println("room id created")
+	}
 
-    roomID := string(b)
-    r.Map[roomID] = []Participant{}
+	fmt.Println("room id created")
 
-    fmt.Println("returning")
-    return roomID
+	roomID := string(b)
+	s.allRooms.Map[roomID] = []Participant{}
+
+	fmt.Println("returning")
+	return roomID
 }
 
 // InsertIntoRoom will insert a participant and add it in the hashmao
-func (r *RoomMap)InsertIntoRoom(roomID string, host bool, conn *websocket.Conn){
-    r.Mutex.Lock()
-    defer r.Mutex.Unlock()
+func (s *service) InsertIntoRoom(ctx context.Context, roomID string, host bool, conn *websocket.Conn) {
+	s.allRooms.Mutex.Lock()
+	defer s.allRooms.Mutex.Unlock()
 
-    p := Participant{
-        Host: host,
-        Conn: conn,
-    }
+	p := Participant{
+		Host: host,
+		Conn: conn,
+	}
 
-    log.Println("Inserting into Room with RoomID: ", roomID)
-    r.Map[roomID] = append(r.Map[roomID], p)
+	log.Println("Inserting into Room with RoomID: ", roomID)
+	s.allRooms.Map[roomID] = append(s.allRooms.Map[roomID], p)
 }
 
 // DeleteRoom delets the room with roomID
-func(r* RoomMap) DeleteRoom(roomID string){
-    r.Mutex.Lock()
-    defer r.Mutex.Unlock()
+func (s *service) DeleteRoom(ctx context.Context, roomID string) {
+	s.allRooms.Mutex.Lock()
+	defer s.allRooms.Mutex.Unlock()
 
-    delete(r.Map, roomID)
+	delete(s.allRooms.Map, roomID)
 }

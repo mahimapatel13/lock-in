@@ -1,7 +1,8 @@
 // import { useState } from 'react'
 import { Route, Routes, BrowserRouter } from 'react-router-dom'
-import CreateRoom from "./components/CreateRoom"
-import Room from "./components/Room"
+import CreateRoom from "@/components/CreateRoom"
+import Room from "@/components/Room"
+import AuthForm from "@/components/login/AuthForm"
 
 import './App.css'
 
@@ -15,6 +16,7 @@ function App() {
           <Routes>
             <Route path="/room/create" element={<CreateRoom/>}></Route>
             <Route path="/room/:roomID" element={<Room/>}></Route>
+            <Route path="/login" element={<AuthForm/>}></Route>
           </Routes>
         </BrowserRouter>
       </div>

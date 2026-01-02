@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS user_schema.refresh_tokens(
     id SERIAL PRIMARY KEY,
     uuid UUID NOT NULL,
     refresh_token VARCHAR NOT NULL,
-    expiration_date DATE NOT NULL,
+    expiration_date TIMESTAMP NOT NULL,
+    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_uuid FOREIGN KEY (uuid) 
     REFERENCES user_schema.users

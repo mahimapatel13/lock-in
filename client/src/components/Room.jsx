@@ -20,7 +20,7 @@ const Room = () => {
     );
 
     const constraints = {
-      audio: true,
+      audio: false,
       video: cameras.length > 0
         ? { deviceId: cameras[0].deviceId }
         : true
@@ -89,9 +89,9 @@ useEffect(() =>{
 
           if(message.answer){
             console.log("Receiving Answer");
-            peerRef.current.setRemoteDescription(
-              message.answer
-            )
+            await peerRef.current.setRemoteDescription(
+                    new RTCSessionDescription(message.answer)
+            );
           }
 
           if (message.iceCandidate) {
@@ -113,50 +113,89 @@ useEffect(() =>{
 
 
 
-  //this fn ic being called somehow
-  const handleOffer = async (offer) => {
-    console.log("Received Offer, Creating Answer")
+  // //this fn ic being called somehow
+  // const handleOffer = async (offer) => {
+  //   console.log("Received Offer, Creating Answer")
 
-    // if(peerRef.current){
-    //   console.log("PC exists.")
-    // }else{
-      peerRef.current = createPeer();
+  //   // if(peerRef.current){
+  //   //   console.log("PC exists.")
+  //   // }else{
+  //     peerRef.current = createPeer();
   
-      console.log(offer)
+  //     console.log(offer)
 
-      await peerRef.current.setRemoteDescription(
-        offer
-      );
+  //     await peerRef.current.setRemoteDescription(
+  //       offer
+  //     );
 
+  //     userStream.current.getTracks().forEach((track) => {
+  //       peerRef.current.addTrack(track, userStream.current);
+  //     });
+
+  //     const answer = await peerRef.current.createAnswer();
+  //     await peerRef.current.setLocalDescription(answer);
+
+  //     console.log("local: ", peerRef.current.localDescription);     
+  //     console.log("remote: ", peerRef.current.remoteDescription);
+          
+  //     webSocketRef.current.send(
+  //       JSON.stringify({ answer: peerRef.current.localDescription})
+  //     );
+  //   // }
+    
+  // }
+
+
+const callUser = async () => {
+    if (peerRef.current) return; // Prevent double creation
+    
+    peerRef.current = createPeer();
+    
+    // Ensure stream tracks are added before creating the offer
+    if (userStream.current) {
+        userStream.current.getTracks().forEach(track => {
+            peerRef.current.addTrack(track, userStream.current);
+        });
+    }
+    
+    const offer = await peerRef.current.createOffer();
+    await peerRef.current.setLocalDescription(offer);
+    
+    webSocketRef.current.send(JSON.stringify({ offer }));
+};
+
+  // const callUser = async () => {
+  //   if (peerRef.current) return; // Don't create if it exists
+  //   peerRef.current = createPeer();
+    
+  //   userStream.current.getTracks().forEach((track) => {
+  //     peerRef.current.addTrack(track, userStream.current);
+  //   });
+  //   // Negotiation will be triggered by onnegotiationneeded or manual offer
+  // };
+
+  const handleOffer = async (offer) => {
+    if (!peerRef.current) {
+      peerRef.current = createPeer();
       userStream.current.getTracks().forEach((track) => {
         peerRef.current.addTrack(track, userStream.current);
       });
+    }
 
-      const answer = await peerRef.current.createAnswer();
-      await peerRef.current.setLocalDescription(answer);
+    // Check if signaling state allows setting remote description
+    if (peerRef.current.signalingState !== "stable") {
+      // If we are already in the middle of an offer, we must resolve glare
+      // For now, let's just log it
+      console.log("Signaling state not stable, ignoring offer to prevent glare");
+      return;
+    }
 
-      console.log("local: ", peerRef.current.localDescription);     
-      console.log("remote: ", peerRef.current.remoteDescription);
-          
-      webSocketRef.current.send(
-        JSON.stringify({ answer: peerRef.current.localDescription})
-      );
-    // }
+    await peerRef.current.setRemoteDescription(new RTCSessionDescription(offer));
+    const answer = await peerRef.current.createAnswer();
+    await peerRef.current.setLocalDescription(answer);
     
-  }
-
-const callUser = async () => {
-    console.log("Calling Other User");
-    peerRef.current = createPeer();
-
-    userStream.current.getTracks().forEach((track) => {
-        peerRef.current.addTrack(track, userStream.current);
-    });
-
-    const myOffer = await peerRef.current.createOffer();
-    await peerRef.current.setLocalDescription(myOffer);
-    webSocketRef.current.send(JSON.stringify({ offer: myOffer }));
-};
+    webSocketRef.current.send(JSON.stringify({ answer: peerRef.current.localDescription }));
+  };
 
   const createPeer = () => {
       console.log("Creating peer connection")
@@ -164,7 +203,7 @@ const callUser = async () => {
         iceServers: [{urls: "stun:stun.l.google.com:19302"}]
       });
 
-      peer.onnegotiationneeded = handleNegotiationNeeded;
+      // peer.onnegotiationneeded = handleNegotiationNeeded;
       peer.onicecandidate = handleIceCandidateEvent;
       peer.ontrack= handleTrackEvent;
       peer.onsignalingstatechange = handleStateChange;

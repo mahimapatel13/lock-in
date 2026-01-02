@@ -55,7 +55,10 @@ func main(){
 	r.Use(gin.Logger(), gin.Recovery())
 
 	r.Use(cors.New(cors.Config{
-        AllowOrigins:     []string{"http://localhost:5173"},
+        AllowOrigins:     []string{
+			"http://localhost:5173",
+
+		},
         AllowMethods:     []string{"POST", "GET", "OPTIONS", "PUT", "DELETE"},
         AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
         // CRITICAL: This allows your Interceptor to read the token!

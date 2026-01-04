@@ -33,7 +33,8 @@ func (h *ProfileHandler) RegisterUser(c *gin.Context) {
 	err := h.service.RegisterUser(c.Request.Context(), req)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -58,7 +59,7 @@ func (h *ProfileHandler) Login(c *gin.Context) {
 	user, err := h.service.AuthenticateUser(c.Request.Context(), r.Password, r.Username, r.Email)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -82,7 +83,7 @@ func(h *ProfileHandler) Refresh(c *gin.Context){
 
     if refreshToken == "" {
         c.AbortWithStatusJSON(401, gin.H{
-            "error": "Unauthorized",
+            "message": "Unauthorized",
         })
         return
     }
@@ -92,7 +93,7 @@ func(h *ProfileHandler) Refresh(c *gin.Context){
 
 	if err != nil{
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Token not found in the system.",
+			"message": "Token not found in the system.",
 		})
 		return
 	}
@@ -114,7 +115,7 @@ func (h *ProfileHandler) GetUser(c *gin.Context) {
 
 	if err != nil || uuid == nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "User not authorized",
+			"message": "User not authorized",
 		})
 		return
 	}
@@ -123,7 +124,7 @@ func (h *ProfileHandler) GetUser(c *gin.Context) {
 
 	if err != nil || user == nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Error in retreiving user details",
+			"message": "Error in retreiving user details",
 		})
 	}
 

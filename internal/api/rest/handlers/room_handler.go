@@ -80,7 +80,7 @@ func (h *RoomHandler) VerifyRoom(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error" : err,
+			"error" : err.Error(),
 		})
 
 		return

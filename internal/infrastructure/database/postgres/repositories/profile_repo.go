@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"errors"
 	"lock-in/internal/domain/profile"
 	"log"
 	"time"
@@ -42,10 +43,12 @@ func (r *profileRepository) RegisterUser(ctx context.Context, user profile.Creat
 
 func(r *profileRepository) GetUserByUIID(ctx context.Context, id uuid.UUID) (*profile.User, error){
     
+    log.Println("Getting user by uuid from database")
+
     var user profile.User
 
 
-    err := r.pool.QueryRow(ctx, "SELECT username, email, hashed_password, uuid FROM user_schema.users where uuid = $1", id).Scan(
+    err := r.pool.QueryRow(ctx, "SELECT username, email, hashed_password, uuid FROM user_schema.users WHERE uuid = $1", id).Scan(
         &user.Username,
         &user.Email,
         &user.Password,
@@ -56,20 +59,35 @@ func(r *profileRepository) GetUserByUIID(ctx context.Context, id uuid.UUID) (*pr
         if err == pgx.ErrNoRows {
             // No row found
             log.Printf("No rows with uuid: %v found", id)
+            log.Println("Error details: ", err.Error())
             return nil, err
         } else {
             // Handle other errors
             log.Println("Error in retreiving user id with uuid: ", id)
+            log.Println("Error details: ", err.Error())
             return nil, err
         }
     }
+
+    log.Println("Retrieved user from db :", user)
+
     
     return &user, nil
 }
-func(r *profileRepository) GetUserByUsername(ctx context.Context, username string) (*profile.User, error){
+func (r *profileRepository) GetUserByUsername(ctx context.Context,username string) (*profile.User, error) {
+
     var user profile.User
 
-    err := r.pool.QueryRow(ctx, "SELECT username, email, hashed_password, uuid FROM user_schema.users where username = $1", username).Scan(
+    log.Println("Getting user by username from database")
+
+
+    row := r.pool.QueryRow(ctx, `
+        SELECT username, email, hashed_password, uuid
+        FROM user_schema.users
+        WHERE username = $1
+    `, username)
+
+    err := row.Scan(
         &user.Username,
         &user.Email,
         &user.Password,
@@ -77,19 +95,22 @@ func(r *profileRepository) GetUserByUsername(ctx context.Context, username strin
     )
 
     if err != nil {
-        if err == pgx.ErrNoRows {
-            // No row found
-            log.Printf("No rows with uuid: %v found", username)
+        if errors.Is(err, pgx.ErrNoRows) {
+            log.Println("Error details: ", err.Error())
             return nil, err
-        } else {
-            // Handle other errors
-            log.Println("Error in retreiving user id with username: ", username)
-            return nil, err
+
         }
+        log.Println("Error details: ", err.Error())
+        return nil, err
+
     }
-    
+
+    log.Println("Retrieved user from db :", user)
+
+
     return &user, nil
 }
+
 
 func(r *profileRepository) GetToken(ctx context.Context, refresh string) (*uuid.UUID, error){
     var uuid uuid.UUID
@@ -101,12 +122,16 @@ func(r *profileRepository) GetToken(ctx context.Context, refresh string) (*uuid.
 
     if err != nil {
         if err == pgx.ErrNoRows {
+            
             // No row found
             log.Printf("No rows with hashed refresh: %v found in refresh token table", refresh)
+            log.Println("Error details: ", err.Error())
+
             return nil, err
         } else {
             // Handle other errors
             log.Println("Error in retreiving user with hashed token:  ", refresh)
+            log.Println("Error details: ", err.Error())
             return nil, err
         }
     }
@@ -114,6 +139,8 @@ func(r *profileRepository) GetToken(ctx context.Context, refresh string) (*uuid.
     return &uuid, nil
 }
 func(r *profileRepository) GetUserByEmail(ctx context.Context, email string) (*profile.User, error){
+
+    log.Println("Getting user by email from database")
 
     var user profile.User
 
@@ -136,6 +163,7 @@ func(r *profileRepository) GetUserByEmail(ctx context.Context, email string) (*p
         }
     }
 
+    log.Println("Retrieved user from db :", user)
     
     return &user, nil
 }

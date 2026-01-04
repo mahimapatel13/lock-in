@@ -7,17 +7,18 @@ import api from "@/utils/api"
 const Room = () => {
   const navigate = useNavigate();
   const { roomID } = useParams();
-  const wsRef = useRef(null);
   const userVideo = useRef();
   const userStream = useRef();
   const partnerVideo = useRef();
   const peerRef = useRef();
   const webSocketRef = useRef();
+
   const openCamera = async () => {
     const allDevices = await navigator.mediaDevices.enumerateDevices();
-    const cameras = allDevices.filter(
-      (device) => device.kind === "videoinput"
-    );
+
+    // const cameras = allDevices.filter(
+    //   (device) => device.kind === "videoinput"
+    // );
 
     const constraints = {
       audio: false,
@@ -30,7 +31,7 @@ const Room = () => {
 
     } catch(err){
       console.log("no cammm :(((")
-      console.log(err)
+      console.error(err)
     }
 };
 
@@ -111,68 +112,24 @@ useEffect(() =>{
   }, [roomID]);
 
 
+  const callUser = async () => {
+      if (peerRef.current) return; // Prevent double creation
+      
+      peerRef.current = createPeer();
+      
+      // Ensure stream tracks are added before creating the offer
+      if (userStream.current) {
+          userStream.current.getTracks().forEach(track => {
+              peerRef.current.addTrack(track, userStream.current);
+          });
+      }
+      
+      const offer = await peerRef.current.createOffer();
+      await peerRef.current.setLocalDescription(offer);
+      
+      webSocketRef.current.send(JSON.stringify({ offer }));
+  };
 
-
-  // //this fn ic being called somehow
-  // const handleOffer = async (offer) => {
-  //   console.log("Received Offer, Creating Answer")
-
-  //   // if(peerRef.current){
-  //   //   console.log("PC exists.")
-  //   // }else{
-  //     peerRef.current = createPeer();
-  
-  //     console.log(offer)
-
-  //     await peerRef.current.setRemoteDescription(
-  //       offer
-  //     );
-
-  //     userStream.current.getTracks().forEach((track) => {
-  //       peerRef.current.addTrack(track, userStream.current);
-  //     });
-
-  //     const answer = await peerRef.current.createAnswer();
-  //     await peerRef.current.setLocalDescription(answer);
-
-  //     console.log("local: ", peerRef.current.localDescription);     
-  //     console.log("remote: ", peerRef.current.remoteDescription);
-          
-  //     webSocketRef.current.send(
-  //       JSON.stringify({ answer: peerRef.current.localDescription})
-  //     );
-  //   // }
-    
-  // }
-
-
-const callUser = async () => {
-    if (peerRef.current) return; // Prevent double creation
-    
-    peerRef.current = createPeer();
-    
-    // Ensure stream tracks are added before creating the offer
-    if (userStream.current) {
-        userStream.current.getTracks().forEach(track => {
-            peerRef.current.addTrack(track, userStream.current);
-        });
-    }
-    
-    const offer = await peerRef.current.createOffer();
-    await peerRef.current.setLocalDescription(offer);
-    
-    webSocketRef.current.send(JSON.stringify({ offer }));
-};
-
-  // const callUser = async () => {
-  //   if (peerRef.current) return; // Don't create if it exists
-  //   peerRef.current = createPeer();
-    
-  //   userStream.current.getTracks().forEach((track) => {
-  //     peerRef.current.addTrack(track, userStream.current);
-  //   });
-  //   // Negotiation will be triggered by onnegotiationneeded or manual offer
-  // };
 
   const handleOffer = async (offer) => {
     if (!peerRef.current) {
@@ -252,19 +209,19 @@ const callUser = async () => {
       }
   }
 
-const handleTrackEvent = (e) => {
-    console.log("Received Tracks:", e.track.kind, e.streams);
-    
-    // Check if we have a stream, if not, create one
-    if (e.streams && e.streams[0]) {
-        partnerVideo.current.srcObject = e.streams[0];
-    } else {
-        // Fallback: Create a new MediaStream and add the track to it
-        console.log("No stream found, creating one from track");
-        const inboundStream = new MediaStream([e.track]);
-        partnerVideo.current.srcObject = inboundStream;
-    }
-};
+  const handleTrackEvent = (e) => {
+      console.log("Received Tracks:", e.track.kind, e.streams);
+      
+      // Check if we have a stream, if not, create one
+      if (e.streams && e.streams[0]) {
+          partnerVideo.current.srcObject = e.streams[0];
+      } else {
+          // Fallback: Create a new MediaStream and add the track to it
+          console.log("No stream found, creating one from track");
+          const inboundStream = new MediaStream([e.track]);
+          partnerVideo.current.srcObject = inboundStream;
+      }
+  };
 
   return (
     <div>

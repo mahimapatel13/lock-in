@@ -10,6 +10,5 @@ export const getUserFromToken = (token) =>{
         .catch(err => {
             console.error("Get user Error: ", err)
             return null
-
         });
 };

@@ -1,27 +1,35 @@
-// import { useState } from 'react'
-import { Route, Routes, BrowserRouter } from 'react-router-dom'
+import { Route, Routes, BrowserRouter, Navigate } from 'react-router-dom'
+import DashboardLayout from "@/layouts/DashboardLayout"
 import CreateRoom from "@/components/CreateRoom"
 import Room from "@/components/Room"
 import AuthForm from "@/components/login/AuthForm"
-
-import './App.css'
+import PrivateRoute from "@/components/PrivateRoute"
 
 function App() {
-
   return (
-    
-      <div>
-        hello world
-        <BrowserRouter>
-          <Routes>
-            <Route path="/room/create" element={<CreateRoom/>}></Route>
-            <Route path="/room/:roomID" element={<Room/>}></Route>
-            <Route path="/login" element={<AuthForm/>}></Route>
-          </Routes>
-        </BrowserRouter>
-      </div>
-     
-    
+    <BrowserRouter>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/login" element={<AuthForm />} />
+
+        {/* Protected Dashboard Routes */}
+        <Route element={<PrivateRoute />}>
+          <Route element={<DashboardLayout />}>
+            {/* These children fill the <Outlet /> in DashboardLayout */}
+            <Route path="/home" element={<div>Home</div>} />
+            <Route path="/room/create" element={<CreateRoom />} />
+            <Route path="/room/:roomID" element={<Room />} />
+            
+            {/* Redirect / to /home */}
+            <Route path="/" element={<Navigate to="/home" replace />} />
+          </Route>
+        </Route>
+
+        {/* 404 Catch-all */}
+        <Route path="*" element={<div>Page Not Found</div>} />
+      </Routes>
+
+    </BrowserRouter>
   )
 }
 

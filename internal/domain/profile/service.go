@@ -9,8 +9,9 @@ import (
 	"errors"
 	"lock-in/internal/domain/email"
 	"log"
-    
+
 	"github.com/google/uuid"
+	// "github.com/jackc/pgx"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -162,18 +163,39 @@ func (s *service) RegisterUser(ctx context.Context, user CreateUserRequest) erro
     log.Println("Registering User on Lock-In")
 
     // Check if a user already exists
-    _, err := s.repo.GetUserByUsername(ctx, user.Username)
+    _, err := s.GetUserByUsername(ctx, user.Username)
 
-    if err == nil {
-        return errors.New(fmt.Sprintf("User with username %s already exists.", user.Username))
+    if err != nil{
+        log.Println(err.Error())
     }
 
-    _, err = s.repo.GetUserByEmail(ctx, user.Email)
+    if err != nil{
+        if err.Error() == "no rows in result set"{
+            log.Println("username available")
+        } else{
+            log.Println("db error..")
+            return err
+        }
+    }else {
+        log.Println("username not available")
+        return errors.New("Username not available")
+    }
+
+    _, err = s.GetUserByEmail(ctx, user.Email)
+
+    if err != nil{
+        if err.Error() == "no rows in result set"{
+            log.Println("email available")
+        } else{
+            log.Println("db error..")
+            return err
+        }
+    }
 
     if err == nil{
-        return errors.New(fmt.Sprintf("User with username %s already exists.", user.Username))
+        log.Println("Email not available")
+        return errors.New("Email not available")
     }
-
     // profile creation starts here..
 
     log.Println("Making password")

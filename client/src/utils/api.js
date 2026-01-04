@@ -1,5 +1,7 @@
 import axios from "axios";
-import { logout, getAccessToken, setAccessToken } from "@/services/authService";
+import { AuthService } from "@/services/authService";
+
+const authService = new AuthService();
 
 const api = axios.create({
     baseURL: "https://supersensuously-frankable-arnold.ngrok-free.dev/api/v1",
@@ -11,9 +13,10 @@ const api = axios.create({
 // --------------------
 api.interceptors.request.use(
     (config) => {
-        const token = getAccessToken();
+        const token = authService.getAccessToken();
         if (token) {
             config.headers["authorization"] = `Bearer ${token}`;
+            console.log("Sending request with token ",token);
         }
         return config;
     },
@@ -41,8 +44,8 @@ api.interceptors.response.use(
     (response) => {
         const token = response.headers['authorization'];
         if (token) {
-            setAccessToken(token);
-            console.log("Token stored in LocalStorage via helper");
+            authService.setAccessToken(token);
+            console.log("Token stored in LocalStorage via helper ", token);
         }
         return response;
     },
@@ -73,7 +76,7 @@ api.interceptors.response.use(
                 );
 
                 const accessToken = response.data.accessToken;
-                setAccessToken(accessToken);
+                authService.setAccessToken(accessToken);
 
                 processQueue(null, accessToken);
 
@@ -81,7 +84,7 @@ api.interceptors.response.use(
                 return api(originalReq);
             } catch (refreshError) {
                 processQueue(refreshError, null);
-                logout();
+                authService.logout();
                 return Promise.reject(refreshError);
             } finally {
                 isRefreshing = false;

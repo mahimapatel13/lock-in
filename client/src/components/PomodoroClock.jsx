@@ -73,7 +73,7 @@ export default function PomodoroClock() {
       
       {/* MAIN CLOCK UNIT */}
       <div className={`
-        border-[3px] border-black p-5 bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] 
+        border-[3px] border-black p-5 bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] 
         flex items-center gap-6 transition-colors duration-500
         ${isBreak ? 'bg-blue-50' : 'bg-white'}
       `}>
@@ -101,7 +101,7 @@ export default function PomodoroClock() {
            </div>
         </div>
 
-        <div className="flex items-center gap-3 pl-4 border-l-[3px] border-black">
+        <div className="flex items-center gap-3 pl-4   border-l-[3px] border-black">
           {isActive ? (
             <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
               <DrawerTrigger asChild>
@@ -112,58 +112,46 @@ export default function PomodoroClock() {
                 </Button>
               </DrawerTrigger>
               
-              <DrawerContent 
-                className="rounded-none border-t-[4px] border-black bg-white outline-none min-h-[40vh]"
-                style={{
-                  backgroundImage: `
-                    linear-gradient(to right, #e5e7eb 1px, transparent 1px),
-                    linear-gradient(to bottom, #e5e7eb 1px, transparent 1px)
-                  `,
-                  backgroundSize: '24px 24px'
-                }}
-              >
-                {/* Content Wrapper */}
-                <div className="mx-auto w-full max-w-6xl px-12 py-24">
-                  <div className="flex flex-col md:flex-row items-center md:items-stretch justify-center gap-20">
+              <DrawerContent className="rounded-none border-t-[3px] border-black bg-white outline-none">
+                <div className="mx-auto w-full max-w-2xl px-8 py-12">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                     
-                    {/* LEFT BLOCK */}
-                    <div className="flex items-center gap-10 flex-1">
-                      <div className="shrink-0 bg-red-400 p-6 border-[3px] border-black shadow-[8px_8px_0px_0px_black] z-10">
-                        <AlertOctagon size={56} className="text-white" strokeWidth={2.5} />
+                    {/* LEFT: HEAVY TYPOGRAPHY */}
+                    <div className="space-y-2">
+                      <div className="inline-block bg-red-400 p-4 border-[3px] border-black shadow-[6px_6px_0px_0px_black] -rotate-2">
+                         <AlertOctagon size={40} className="text-white" />
                       </div>
-                      
-                      <div className="flex flex-col justify-center text-left z-10">
-                        <DrawerTitle className="text-7xl font-black uppercase italic tracking-tighter leading-[0.8] mb-3">
-                          Stop <br/> Session?
+                      <div>
+                        <DrawerTitle className="text-5xl font-black uppercase italic tracking-[calc(-0.05em)] leading-[0.9] mb-4">
+                          Abort <br/> Mission?
                         </DrawerTitle>
-                        <DrawerDescription className="font-bold text-black uppercase text-[12px] tracking-[0.25em] leading-none opacity-60">
-                          Current progress will be <span className="underline underline-offset-4 decoration-[3px]">voided</span>
+                        <DrawerDescription className="font-bold text-zinc-500 uppercase text-xs tracking-[0.2em] leading-relaxed">
+                          Stopping now will void this <span className="text-black underline decoration-[3px]">{MODES[currentMode].label}</span> session.
                         </DrawerDescription>
                       </div>
                     </div>
 
-                    {/* RIGHT BLOCK */}
-                    <DrawerFooter className="flex flex-col gap-5 p-0 w-full md:w-[360px] shrink-0 justify-center z-10">
+                    {/* RIGHT: BOLD ACTIONS */}
+                    <DrawerFooter className="flex flex-col gap-4 p-0">
                       <Button 
                         onClick={() => {
                           toggleTimer();
                           setIsDrawerOpen(false);
                         }}
-                        className="w-full h-24 rounded-none border-[3px] border-black bg-red-400 text-white font-black uppercase text-2xl shadow-[10px_10px_0px_0px_black] hover:bg-red-500 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all group"
+                        className="w-full h-20 rounded-none border-[3px] border-black bg-red-400 text-white font-black uppercase text-lg shadow-[8px_8px_0px_0px_black] hover:bg-red-500 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all group"
                       >
-                        Yes, End it <ArrowRight className="ml-3 group-hover:translate-x-2 transition-transform" size={28} />
+                        Yes, End it <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
                       </Button>
                       
                       <DrawerClose asChild>
                         <Button 
                           variant="neutral"
-                          className="w-full h-16 rounded-none border-[3px] border-black bg-white text-black font-black uppercase text-sm shadow-[6px_6px_0px_0px_black] hover:bg-zinc-50 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
+                          className="w-full h-16 rounded-none border-[3px] border-black bg-white text-black font-black uppercase text-sm shadow-[4px_4px_0px_0px_black] hover:bg-zinc-50 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
                         >
-                          Keep Going
+                          Stay Focused
                         </Button>
                       </DrawerClose>
                     </DrawerFooter>
-
                   </div>
                 </div>
               </DrawerContent>

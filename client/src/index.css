@@ -17,6 +17,27 @@
 }
 
 
+
+.bg-neo-hatch {
+  /* background-color: var(--main); */
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.05),
+    rgba(0, 0, 0, 0.05) 10px,
+    transparent 10px,
+    transparent 20px
+  );
+}
+
+.bg-graph-paper-blue {
+  /* The base blue color from your variables */
+  background-color: var(--background); 
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-attachment: fixed;
+}
 .bg-graph-paper {
   background-color: var(--secondary-background);
   background-image: 

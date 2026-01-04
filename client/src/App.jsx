@@ -16,7 +16,7 @@ function App() {
         <Route element={<PrivateRoute />}>
           <Route element={<DashboardLayout />}>
             {/* These children fill the <Outlet /> in DashboardLayout */}
-            <Route path="/home" element={<div>Home</div>} />
+            <Route path="/home" element={<div></div>} />
             <Route path="/room/create" element={<CreateRoom />} />
             <Route path="/room/:roomID" element={<Room />} />
             

@@ -5,7 +5,14 @@
 
 @layer base {
 
-  
+  *:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+  *:focus-visible {
+    outline: none !important;
+    ring: 0 !important;
+  }
 
 
   /* This forces shadcn's internal wrapper to fill the screen width */
@@ -16,8 +23,13 @@
   }
 }
 
-
-
+.bg-graph-paper-red {
+    background-color: #B9756e;
+    background-image: 
+      linear-gradient(to right, rgba(0, 0, 0, 0.15) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.15) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
 .bg-neo-hatch {
   /* background-color: var(--main); */
   background-image: repeating-linear-gradient(

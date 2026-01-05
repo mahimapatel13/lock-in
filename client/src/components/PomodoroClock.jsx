@@ -18,13 +18,22 @@ const MODES = {
   DEEP: { label: "90/30", work: 90, break: 30 },
 };
 
-export default function PomodoroClock() {
+// Added onStateChange to props
+export default function PomodoroClock({ onStateChange }) {
   const [currentMode, setCurrentMode] = useState("STANDARD");
   const [minutes, setMinutes] = useState(MODES.STANDARD.work);
   const [seconds, setSeconds] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  // Sync the Focus Mode background with the timer state
+  useEffect(() => {
+    if (onStateChange) {
+      // Focus mode is TRUE only if timer is running AND it's not a break
+      onStateChange(isActive && !isBreak);
+    }
+  }, [isActive, isBreak, onStateChange]);
 
   const handleModeChange = useCallback((modeKey) => {
     const mode = MODES[modeKey];
@@ -45,11 +54,12 @@ export default function PomodoroClock() {
           setMinutes((m) => m - 1);
           setSeconds(59);
         } else {
+          // Timer reached zero
           const nextIsBreak = !isBreak;
           setIsBreak(nextIsBreak);
           setMinutes(nextIsBreak ? MODES[currentMode].break : MODES[currentMode].work);
           setSeconds(0);
-          setIsActive(false);
+          setIsActive(false); // Stop timer at transition
         }
       }, 1000);
     }
@@ -78,7 +88,7 @@ export default function PomodoroClock() {
         ${isBreak ? 'bg-blue-50' : 'bg-white'}
       `}>
         <div className="flex flex-col items-center justify-center border-r-[3px] border-black pr-6 min-w-[120px]">
-          {isBreak ? <Coffee size={24} /> : <Brain size={24} />}
+          {isBreak ? <Coffee size={24} className="text-blue-500" /> : <Brain size={24} className="text-red-500" />}
           <span className="font-black uppercase text-[11px] tracking-tighter mt-1">
             {isBreak ? "Break" : "Focus"}
           </span>
@@ -95,13 +105,13 @@ export default function PomodoroClock() {
            </div>
            <div className="border-[3px] border-black h-6 bg-zinc-100 relative overflow-hidden shadow-[2px_2px_0px_0px_black]">
               <div 
-                className="h-full bg-[#00A3FF] transition-all duration-300 border-r-[3px] border-black" 
+                className={`h-full transition-all duration-300 border-r-[3px] border-black ${isBreak ? 'bg-blue-400' : 'bg-[#00A3FF]'}`} 
                 style={{ width: `${progress}%` }}
               />
            </div>
         </div>
 
-        <div className="flex items-center gap-3 pl-4   border-l-[3px] border-black">
+        <div className="flex items-center gap-3 pl-4 border-l-[3px] border-black">
           {isActive ? (
             <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
               <DrawerTrigger asChild>
@@ -116,7 +126,6 @@ export default function PomodoroClock() {
                 <div className="mx-auto w-full max-w-2xl px-8 py-12">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                     
-                    {/* LEFT: HEAVY TYPOGRAPHY */}
                     <div className="space-y-2">
                       <div className="inline-block bg-red-400 p-4 border-[3px] border-black shadow-[6px_6px_0px_0px_black] -rotate-2">
                          <AlertOctagon size={40} className="text-white" />
@@ -131,11 +140,10 @@ export default function PomodoroClock() {
                       </div>
                     </div>
 
-                    {/* RIGHT: BOLD ACTIONS */}
                     <DrawerFooter className="flex flex-col gap-4 p-0">
                       <Button 
                         onClick={() => {
-                          toggleTimer();
+                          setIsActive(false); // Stop the timer
                           setIsDrawerOpen(false);
                         }}
                         className="w-full h-20 rounded-none border-[3px] border-black bg-red-400 text-white font-black uppercase text-lg shadow-[8px_8px_0px_0px_black] hover:bg-red-500 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all group"
@@ -159,7 +167,7 @@ export default function PomodoroClock() {
           ) : (
             <Button 
               onClick={toggleTimer}
-              className="h-14 w-28 rounded-none border-[3px] border-black font-black uppercase text-sm shadow-[4px_4px_0px_0px_black] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none bg-[var(--main)] hover:bg-[var(--main)]/90 text-black transition-all"
+              className="h-14 w-28 rounded-none border-[3px] border-black font-black uppercase text-sm shadow-[4px_4px_0px_0px_black] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none bg-[#A3E635] hover:bg-[#bef264] text-black transition-all"
             >
               <Play size={18} className="mr-1" /> Go
             </Button>
@@ -186,7 +194,7 @@ export default function PomodoroClock() {
               h-14 px-10 rounded-none border-[3px] border-black font-black text-xs uppercase transition-all
               tracking-[0.2em] shadow-[6px_6px_0px_0px_black] hover:bg-zinc-50
               ${currentMode === key 
-                ? 'bg-[var(--accent-yellow)] -translate-y-1.5 shadow-[10px_10px_0px_0px_black] hover:bg-[var(--accent-yellow)]' 
+                ? 'bg-[#FDE047] -translate-y-1.5 shadow-[10px_10px_0px_0px_black] hover:bg-[#FDE047]' 
                 : 'bg-white'}
             `}
           >

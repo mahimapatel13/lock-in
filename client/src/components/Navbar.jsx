@@ -5,18 +5,18 @@ export default function Navbar() {
   const navLinks = ["Docs", , "Community"]
 
   return (
-    <nav className=" sticky top-0 z-50 w-full border-b-2 border-black bg-white px-40 h-16 flex items-center justify-between ">
+    <nav className=" sticky top-0 z-50 w-full border-b-2 border-black px-40 h-16 flex items-center justify-between ">
       {/* Left Side: Logo and Links */}
       <div className="flex items-center gap-8">
         {/* The Logo: A simple bold square */}
-           <div className="
+           {/* <div className="
             flex h-10 w-10 shrink-0 items-center justify-center 
             bg-main border-2 border-black 
             shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
             font-black text-xl
           ">
             L
-          </div> 
+          </div>  */}
 
                     <div className="flex justify-center flex-col ">
             <span className="text-lg font-black leading-none uppercase tracking-tight">

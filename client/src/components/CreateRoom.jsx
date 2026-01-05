@@ -19,7 +19,7 @@ const CreateRoom = () => {
         api.post("/room/create")
             .then(res => {
                 const roomID = res.data.room_id;
-                navigate(`/room/${roomID}`);
+                navigate(`/room/${roomID}`, { replace: true });
             })
             .catch(err => {
                 if (err.response) {

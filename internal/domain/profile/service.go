@@ -169,6 +169,8 @@ func (s *service) RegisterUser(ctx context.Context, user CreateUserRequest) erro
         log.Println(err.Error())
     }
 
+    log.Println("email logs..")
+
     if err != nil{
         if err.Error() == "no rows in result set"{
             log.Println("username available")
@@ -183,6 +185,8 @@ func (s *service) RegisterUser(ctx context.Context, user CreateUserRequest) erro
 
     _, err = s.GetUserByEmail(ctx, user.Email)
 
+    log.Println(" logs..")
+
     if err != nil{
         if err.Error() == "no rows in result set"{
             log.Println("email available")
@@ -190,12 +194,13 @@ func (s *service) RegisterUser(ctx context.Context, user CreateUserRequest) erro
             log.Println("db error..")
             return err
         }
-    }
-
-    if err == nil{
+    }else{
         log.Println("Email not available")
         return errors.New("Email not available")
     }
+
+    
+
     // profile creation starts here..
 
     log.Println("Making password")

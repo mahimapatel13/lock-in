@@ -3,6 +3,7 @@ package handlers
 import (
 	"log"
 	"net/http"
+	"time"
 
 	// "net/http"
 	// "encoding/json"
@@ -137,7 +138,7 @@ func(h *RoomHandler) JoinRoomRequest(c *gin.Context) {
 
 	if err != nil {
 		log.Fatal("Web Socket Upgrade Error: ", err)
-        c.JSON(http.StatusNotFound, gin.H{"error": err})
+        c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return 
 	}
 
@@ -181,27 +182,87 @@ func(h *RoomHandler) RecordSessionRequest (c *gin.Context){
 
     req := request.GetReqBody[request.RecordSessionRequest](c)
 
-	log.Println(req.SessionDuration)
-	log.Println(req.SessionType)
+	log.Println(req.EndTime)
+	// log.Println(req.SessionType)
 
-   
-    session := study_session.Session{
-        Type: study_session.SessionType(req.SessionType),
-        Duration: uint32(req.SessionDuration),
-        // UserID: ,
-    }
+	t, err := time.Parse(time.RFC3339, req.EndTime)
+	log.Println(t)
 
-    err := h.sessionService.RecordSession(c.Request.Context(),session)
+		if err != nil {
+		log.Println("incorrect time format.. ")
+		c.JSON(http.StatusBadRequest,gin.H{
+			"error": "Correct time format is 2026-01-09T07:00:00+05:30 in string",
+		})
+
+		return 
+	}
+
+	uuid, err := auth.GetUser(c)
+
+	if err != nil || uuid == nil {
+		log.Println("user not found bro")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "User not authorized",
+		})
+		return
+	}
+
+    err = h.sessionService.RecordSession(c.Request.Context(),*uuid,t.UTC())
 
     if err != nil {
         log.Println("Error while recording the session details: ", err)
-        c.JSON(http.StatusNotFound, gin.H{"error": err})
+        c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
     }
 
 
     c.JSON(http.StatusOK,gin.H{
         "message": "Recorded Session Succesfully!",
+    } )
+}
+// StartSessionRequest records the start time of a focus session in db
+func(h *RoomHandler) StartSessionRequest (c *gin.Context){
+    
+    log.Println("Handling StartSessionRequest")
+
+    req := request.GetReqBody[request.StartSessionRequest](c)
+
+	log.Println(req.StartTime)
+	// log.Println(req.SessionType)
+
+	t, err := time.Parse(time.RFC3339, req.StartTime)
+	log.Println(t)
+
+	if err != nil {
+		log.Println("incorrect time format.. ")
+		c.JSON(http.StatusBadRequest,gin.H{
+			"error": "Correct time format is 2026-01-09T07:00:00+05:30 in string",
+		})
+
+		return 
+	}
+
+	uuid, err := auth.GetUser(c)
+
+	if err != nil || uuid == nil {
+		log.Println("user not found bro")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "User not authorized",
+		})
+		return
+	}
+
+    err = h.sessionService.StartSession(c.Request.Context(),*uuid, t.UTC())
+
+    if err != nil {
+        log.Println("Error while starting the session: ", err)
+        c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+    }
+
+
+    c.JSON(http.StatusOK,gin.H{
+        "message": "Started Session Succesfully!",
     } )
 }
 

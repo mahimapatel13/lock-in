@@ -4,20 +4,121 @@ import (
 	"context"
 	"lock-in/internal/domain/study_session"
 	"log"
+	"time"
+
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 
-type studySessionRepository struct {
-
+type studySessionRepository struct{
+    pool *pgxpool.Pool
 }
 
-func NewStudySessionRepository() study_session.Repository {
-    return &studySessionRepository{}
+func NewStudySessionRepository(pool *pgxpool.Pool) study_session.Repository{
+    return &studySessionRepository{
+        pool: pool,
+    }
 }
 
 
-// RecordSessionDetails makes db entry for session details
-func (r *studySessionRepository) RecordSessionDetails(ctx context.Context, session study_session.Session) error{
-    log.Println("hihihih")
+// StartSession records the start time of the session in the db
+func (r *studySessionRepository)StartSession(ctx context.Context, userID uuid.UUID, startTime time.Time) error{
+    log.Println("starting session in db..")
+
+    _, err := r.pool.Exec(ctx,
+        `INSERT INTO study_schema.start_session (user_id, start_time) VALUES ($1, $2)`,
+        userID,
+        startTime,
+    )
+
+    if err != nil {
+        log.Println("Error while inserting start time of session into db.")
+        return err
+    }
+
+    log.Println("Succesfully inserted start time in db.")
     return nil
 }
+
+// GetStartTime return the most recent session started by the user
+func (r *studySessionRepository)GetStartTime(ctx context.Context, userID uuid.UUID) (*time.Time, error){
+    log.Println("getting start time from db..")
+
+    var startTime time.Time
+
+    err := r.pool.QueryRow(ctx, "SELECT start_time FROM study_schema.start_session WHERE user_id = $1 ORDER BY start_time DESC LIMIT 1", userID).Scan(
+        &startTime,
+    )
+
+    if err != nil {
+        log.Println("error in fetching the start time for user")
+        return nil, err 
+    }
+
+    log.Println("succesfully fetched start time of session for user..")
+    return &startTime, nil
+}
+
+func (r *studySessionRepository) SaveAndClearSession(ctx context.Context, userID uuid.UUID, minutes int, endTime time.Time, startTime time.Time)error{
+    tx, err := r.pool.Begin(ctx)
+    if err != nil {
+        // Handle error
+        log.Println("error while saving and clearing session ")
+        return err
+    }
+
+    // Always defer rollback - it's safe to call after Commit
+    defer tx.Rollback(ctx)
+
+    // Execute operations within the transaction
+    _, err = tx.Exec(ctx, 
+        `INSERT INTO study_schema.study_session (user_id, session_duration , end_time) VALUES ($1, $2, $3)`,
+        userID,
+        minutes,
+        endTime,
+    )
+
+    if err != nil {
+        log.Println("Error while recording session");
+        return err  // Deferred Rollback() will execute
+    }
+
+
+    _, err = tx.Exec(ctx, "DELETE FROM study_schema.start_session WHERE start_time=$1", startTime)
+
+    if err != nil {
+        log.Println("Error while deleting start record");
+        return err  // Deferred Rollback() will execute
+    }
+
+    // Commit the transaction
+    err = tx.Commit(ctx)
+    if err != nil {
+        return err  // Already rolled back if commit failed
+    }
+
+    return nil
+}
+
+// RecordSessionDetails records session details in database
+func (r *studySessionRepository)RecordSessionDetails(ctx context.Context, userID uuid.UUID, sessionDuration int, endTime time.Time) error{
+
+    log.Println("recording session details in db..")
+    
+    _, err := r.pool.Exec(ctx,
+        `INSERT INTO study_schema.study_session (user_id, session_duration , end_time) VALUES ($1, $2, $3)`,
+        userID,
+        sessionDuration,
+        endTime,
+    )
+
+    if err != nil {
+        log.Println("error while inserting sessions into db..")
+        return err
+    }
+
+    log.Println("succesfully inserted study session details in db.")
+    return nil
+}
+

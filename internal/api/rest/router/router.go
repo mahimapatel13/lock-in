@@ -3,6 +3,7 @@ package router
 import (
 	// "lock-in/internal/domain/email"
 	"lock-in/internal/domain/email"
+	"lock-in/internal/domain/leaderboard"
 	"lock-in/internal/domain/profile"
 	"lock-in/internal/domain/study_room"
 	"lock-in/internal/domain/study_session"
@@ -31,9 +32,12 @@ func RegisterRoutes(
 
 	profileRepo := repositories.NewProfileRepository(pool)
 	profileService := profile.NewService(profileRepo, emailService)
+
+	leaderboardRepo := repositories.NewLeaderboardRepository(pool)
+	leaderboardService := leaderboard.NewService(leaderboardRepo, profileService)
 	
-	studySessionRepo := repositories.NewStudySessionRepository()
-	studySessionService := study_session.NewService(studySessionRepo)
+	studySessionRepo := repositories.NewStudySessionRepository(pool)
+	studySessionService := study_session.NewService(studySessionRepo, profileService, leaderboardService)
 
 	studyRoomService := study_room.NewService()
 	

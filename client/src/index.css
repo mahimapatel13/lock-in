@@ -2,6 +2,29 @@
 
 @custom-variant dark (&:is(.dark *));
 
+.main-content {
+  flex-grow: 1; /* Tells the main area to take up all remaining space */
+  width: 100%;
+  transition: all 3s ease-in-out;
+}
+
+/* Sidebar.css */
+.left-sidebar {
+  width: 12.5rem;
+  margin-left: -12.5rem; 
+  transition: margin-left 5-3s ease-in-out;
+  background: #f4f4f4;
+}
+
+.layout-wrapper {
+  display: flex;
+  width: 100%;
+  overflow-x: hidden; /* Prevents scrollbars during animation */
+}
+
+.left-sidebar.is-open {
+  transform: translateX(0); /* Slides in */
+}
 
 @layer base {
 
@@ -29,7 +52,8 @@
       linear-gradient(to right, rgba(0, 0, 0, 0.15) 1px, transparent 1px),
       linear-gradient(to bottom, rgba(0, 0, 0, 0.15) 1px, transparent 1px);
     background-size: 40px 40px;
-  }
+}
+
 .bg-neo-hatch {
   /* background-color: var(--main); */
   background-image: repeating-linear-gradient(
@@ -74,9 +98,7 @@
   --chart-4: #05E17A;
   --chart-5: #7A83FF;
   --chart-active-dot: #000;
-  /* ... your existing variables ... */
   --accent-yellow: #FACC15; 
-  /* Neobrutalist Shadows */
   --neo-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
   --neo-shadow-lg: 6px 6px 0px 0px rgba(0,0,0,1);
 }

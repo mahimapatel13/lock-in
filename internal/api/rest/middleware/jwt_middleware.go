@@ -4,6 +4,7 @@ import (
 	// "errors"
 	"fmt"
 	"strings"
+	"log"
 
 	"lock-in/internal/api/rest/auth"
 
@@ -33,6 +34,7 @@ func ValidateToken(tokenString string, secret string) (*jwt.Token, *auth.CustomC
 // JWTWithRefresh middleware validates JWT Access token
 func JWTMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		log.Println("Checking jwt")
 		authHeader := c.GetHeader("Authorization")
 
 		// Safety check for "Bearer <token>"
@@ -53,6 +55,7 @@ func JWTMiddleware() gin.HandlerFunc {
 
 		// Store the claims for the next handlers
 		c.Set("user_id", claims.UserID)
+		log.Println("jwt ok")
 		c.Next()
 	}
 }

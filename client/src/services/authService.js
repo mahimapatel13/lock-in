@@ -10,7 +10,7 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem("access_token");
-    window.location.href = "/login";
+    window.location.href = "/welcome";
   }
 
   deleteAccessToken(){

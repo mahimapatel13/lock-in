@@ -9,8 +9,9 @@ import { LogOut, Copy, Check } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { useRoom } from "@/context/RoomContext" // Import your new context hook
 import { usePomodoro } from "@/context/PomodoroContext"
+import LeftSidebar from "@/components/LeftSidebar"
 
-export default function DashboardLayout() {
+export default function Layout() {
   const navigate = useNavigate();
   const location = useLocation();
   const { leaveRoom } = useRoom(); // Get cleanup function from context
@@ -36,16 +37,28 @@ export default function DashboardLayout() {
     <div className="flex flex-col h-screen w-full bg-white overflow-hidden">
       <Navbar />
 
-      
-
-      <SidebarProvider className="w-full h-[calc(100vh-64px)]">
+    
         <div className="flex w-full h-full overflow-hidden">
           
           {/* Sidebar hides during Focus Mode */}
-          {!isFocusing && <SideBar />}
+            <aside 
+                className={`
+                  transition-all duration-500 ease-in-out border-r-2  border-black bg-white
+                  ${isFocusing ? 'w-0 opacity-0' : 'w-65 opacity-100'}
+                `}
+              >
+                {/* Important: The content inside needs a fixed width 
+                  so it doesn't "squish" while the parent shrinks.
+                */}
+                <div className="">
+                  <LeftSidebar />
+                </div>
+              </aside>
+        
           
-          <SidebarInset className="flex flex-col flex-1 w-full layout-wrapper overflow-hidden border-none rounded-none">
             <div className="flex  layout-wrapper flex-row flex-1 overflow-hidden ">
+
+      
               
               <main className={`flex-1 main-content flex flex-col overflow-hidden relative transition-colors duration-300 ${isFocusing ? 'bg-graph-paper-red' : 'bg-graph-paper-blue'}`}>
                 
@@ -98,9 +111,7 @@ export default function DashboardLayout() {
               {/* )} */}
 
             </div>
-          </SidebarInset>
         </div>
-      </SidebarProvider>
     </div>
   )
 }

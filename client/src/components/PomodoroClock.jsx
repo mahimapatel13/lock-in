@@ -11,72 +11,42 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { usePomodoro } from "@/context/PomodoroContext";
+
+// const MODES = {
+//   STANDARD: { label: "25/5", work: 25, break: 5 },
+//   LONG: { label: "50/10", work: 50, break: 10 },
+//   DEEP: { label: "90/30", work: 90, break: 30 },
+// };
 
 const MODES = {
-  STANDARD: { label: "25/5", work: 25, break: 5 },
-  LONG: { label: "50/10", work: 50, break: 10 },
-  DEEP: { label: "90/30", work: 90, break: 30 },
+  STANDARD: { label: "25/5", work: 1, break: 1 },
+  LONG: { label: "50/10", work: 1, break: 1 },
+  DEEP: { label: "90/30", work: 1, break: 1 },
 };
 
+
 // Added onStateChange to props
-export default function PomodoroClock({ onStateChange }) {
-  const [currentMode, setCurrentMode] = useState("STANDARD");
-  const [minutes, setMinutes] = useState(MODES.STANDARD.work);
-  const [seconds, setSeconds] = useState(0);
-  const [isActive, setIsActive] = useState(false);
-  const [isBreak, setIsBreak] = useState(false);
+export default function PomodoroClock() {
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  // Sync the Focus Mode background with the timer state
-  useEffect(() => {
-    if (onStateChange) {
-      // Focus mode is TRUE only if timer is running AND it's not a break
-      onStateChange(isActive && !isBreak);
-    }
-  }, [isActive, isBreak, onStateChange]);
-
-  const handleModeChange = useCallback((modeKey) => {
-    const mode = MODES[modeKey];
-    setCurrentMode(modeKey);
-    setIsActive(false);
-    setIsBreak(false);
-    setMinutes(mode.work);
-    setSeconds(0);
-  }, []);
-
-  useEffect(() => {
-    let interval = null;
-    if (isActive) {
-      interval = setInterval(() => {
-        if (seconds > 0) {
-          setSeconds((s) => s - 1);
-        } else if (minutes > 0) {
-          setMinutes((m) => m - 1);
-          setSeconds(59);
-        } else {
-          // Timer reached zero
-          const nextIsBreak = !isBreak;
-          setIsBreak(nextIsBreak);
-          setMinutes(nextIsBreak ? MODES[currentMode].break : MODES[currentMode].work);
-          setSeconds(0);
-          setIsActive(false); // Stop timer at transition
-        }
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isActive, seconds, minutes, isBreak, currentMode]);
-
-  const toggleTimer = () => setIsActive(!isActive);
+  const {
+    isBreak,
+    seconds,
+    isActive,
+    minutes,
+    currentMode,
+    setIsActive,
+    toggleTimer,
+    progress,
+    resetTimer,
+    handleModeChange,
+  } = usePomodoro();
   
-  const resetTimer = () => {
-    setIsActive(false);
-    setIsBreak(false);
-    setMinutes(MODES[currentMode].work);
-    setSeconds(0);
-  };
+  const isFocusing = isActive && !isBreak;
 
-  const totalTime = isBreak ? MODES[currentMode].break : MODES[currentMode].work;
-  const progress = ((totalTime * 60 - (minutes * 60 + seconds)) / (totalTime * 60)) * 100;
+  console.log("Pomodoro check .. current use is focusing ? .. ", currentMode)
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-10"> 
@@ -112,7 +82,7 @@ export default function PomodoroClock({ onStateChange }) {
         </div>
 
         <div className="flex items-center gap-3 pl-4 border-l-[3px] border-black">
-          {isActive ? (
+          {(isActive  && isFocusing) ?  (
             <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
               <DrawerTrigger asChild>
                 <Button 

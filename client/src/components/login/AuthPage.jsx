@@ -13,7 +13,7 @@ const AuthPage = () => {
       </div>
       
       {/* Bottom Right Watermark */}
-      <div className="absolute -bottom-20 -right-10 text-[220px] font-[1000] text-black/[0.03] uppercase italic leading-none pointer-events-none select-none">
+      <div className="absolute -bottom-20 -right-10 text-[220px] font-[1000] text-black/3 uppercase italic leading-none pointer-events-none select-none">
         SYNC
       </div>
 
@@ -25,7 +25,7 @@ const AuthPage = () => {
       </div>
 
       {/* 2. THE MAIN LAYOUT */}
-      <div className="w-full max-w-[1440px] h-full flex flex-row items-stretch relative z-10">
+      <div className="w-full max-w-360 h-full flex flex-row items-stretch relative z-10">
         
         {/* LEFT: BRANDING SIDE */}
         <div className="hidden lg:flex flex-1 items-center justify-center px-12 border-r-4 border-black/5">
@@ -36,7 +36,7 @@ const AuthPage = () => {
 
         {/* RIGHT: AUTH SIDE */}
         <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
-          <div className="w-full max-w-[440px]">
+          <div className="w-full max-w-110">
             {/* Shadow and wrapper animations removed. 
                 Using your AuthForm's internal Neobrutalist styling.
             */}

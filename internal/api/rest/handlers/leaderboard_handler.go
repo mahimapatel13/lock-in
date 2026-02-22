@@ -35,31 +35,33 @@ func(h *LeaderboardHandler) GetTopUsers(c *gin.Context){
 		return
 	}
 
-    t := time.Now()
+    now := time.Now()
+    yesterday := now.AddDate(0, 0, -1)
 
-    topUsers, err := h.service.GetTopUsersForDate(c.Request.Context(), t)
+    topUsers, err := h.service.GetTopUsersForDate(c.Request.Context(), yesterday,*uuid)
 
 
     if err != nil {
-        log.Println("Error while getting top users for date", t.Format("2026-02-01"))
+        log.Println("Error while getting top users for date", yesterday.Format("2026-02-01"))
         c.JSON(http.StatusBadRequest, gin.H{
             "error": err.Error(),
         })
         return
     }
 
-    resp := make([]response.TopUser, len(topUsers))
+    resp := make([]response.TopUser, 0)
 
     for i  := range topUsers {
 
         var user response.TopUser
-        user.UserID = topUsers[i].UserID
+        user.MinutesFocused = topUsers[i].Minutes
         user.Username = topUsers[i].Username
+        user.Rank = topUsers[i].Rank
 
         resp = append(resp, user)
     }
 
-    log.Println("succsfully handles request to get top users")
+    log.Println("succsfully handles request to get top users", resp)
 
     c.JSON(http.StatusOK, gin.H{
         "message": resp,

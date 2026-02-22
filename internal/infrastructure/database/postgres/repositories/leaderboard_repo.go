@@ -33,12 +33,99 @@ func(r *leaderboardRepository) InsertIntoLeaderboard(ctx context.Context, userID
     log.Println("Succesfully inserted record into leaderboard table!")
     return nil
 }
+func(r *leaderboardRepository) GetRankOfUser(ctx context.Context, userID uuid.UUID, date string)(leaderboard.User, error){
 
-func (r *leaderboardRepository) GetTopUsersForDate(ctx context.Context, date string) ([]uuid.UUID, error){
+     tx, err := r.pool.Begin(ctx)
+    if err != nil {
+        // Handle error
+        log.Println("error while saving and clearing session ")
+        return leaderboard.User{ },err
+    }
+
+    // Always defer rollback - it's safe to call after Commit
+    defer tx.Rollback(ctx)
+
+//     // Execute operations within the transaction
+//     _, err = tx.Exec(ctx, 
+//         `INSERT INTO study_schema.study_session (user_id, session_duration , end_time) VALUES ($1, $2, $3)`,
+//         userID,
+//         minutes,
+//         endTime,
+//     )
+
+//     if err != nil {
+//         log.Println("Error while recording session");
+//         return err  // Deferred Rollback() will execute
+//     }
+
+
+//     _, err = tx.Exec(ctx, "DELETE FROM study_schema.start_session WHERE start_time=$1", startTime)
+
+//     if err != nil {
+//         log.Println("Error while deleting start record");
+//         return err  // Deferred Rollback() will execute
+//     }
+
+//     // Commit the transaction
+//     err = tx.Commit(ctx)
+//     if err != nil {
+//         return err  // Already rolled back if commit failed
+//     }
+
+//     return nil
+// }
+    log.Println("Getting rank of user..")
+    var user leaderboard.User
+
+    err = tx.QueryRow(ctx,
+        `WITH RankedLeaderboard AS (
+            SELECT 
+                user_id, 
+                minutes_focused,
+                RANK() OVER (ORDER BY minutes_focused DESC) as user_rank
+            FROM leaderboard_schema.leaderboard
+            WHERE leaderboard_date = $1
+        )
+        SELECT user_rank, minutes_focused
+        FROM RankedLeaderboard
+        WHERE user_id = $2
+        `, 
+    date,userID).Scan(&user.Rank, &user.Minutes)
+
+    if err != nil {
+        if err.Error()=="no rows in result set"{
+            var rank int
+            err := tx.QueryRow(ctx,"SELECT COUNT(*) FROM leaderboard_schema.leaderboard WHERE leaderboard_date=$1", date).Scan(&rank)
+
+            if err != nil {
+                if err.Error() != "no rows in result set"{
+                    log.Println("db error")
+                    return leaderboard.User{}, nil
+                }
+            }
+
+            rank = rank+1
+            var user leaderboard.User
+            user.Rank =rank
+            user.Minutes = 0
+            user.UserID = userID
+
+            return user, nil
+
+        }else{
+            log.Println("db error while finding rank of user")
+            return leaderboard.User{}, nil
+        }
+    }
+
+    return user, nil
+
+}
+func (r *leaderboardRepository) GetTopUsersForDate(ctx context.Context, date string) ([]leaderboard.User, error){
     log.Println("Getting top user for date ", date, " from db")
 
     
-    rows ,err := r.pool.Query(ctx, "SELECT user_id FROM leaderboard_schema.leaderboard WHERE leaderboard_date = $1 ORDER BY minutes_focused DESC LIMIT 20", &date)
+    rows ,err := r.pool.Query(ctx, "SELECT user_id, minutes_focused FROM leaderboard_schema.leaderboard WHERE leaderboard_date = $1 ORDER BY minutes_focused DESC LIMIT 20", &date)
     
     if err != nil {
         log.Println("Failed to get top user by date")
@@ -47,14 +134,15 @@ func (r *leaderboardRepository) GetTopUsersForDate(ctx context.Context, date str
 
     defer rows.Close()
 
-    var users []uuid.UUID
+    var users []leaderboard.User
 
     for rows.Next(){
-        var user uuid.UUID
-        if err := rows.Scan(&user); err != nil {
+        var user leaderboard.User
+        if err := rows.Scan(&user.UserID,&user.Minutes ); err != nil {
             log.Println("Failed to scan leaderboard row")
             return nil, err
         }
+
         users = append(users, user)
     }
 

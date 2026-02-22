@@ -16,7 +16,7 @@ type service struct {
 
 type Service interface {
     UpdateLeaderboardRecord(ctx context.Context, userID uuid.UUID,time time.Time, minutes int)error
-    GetTopUsersForDate(ctx context.Context ,time time.Time) ([]User, error)
+    GetTopUsersForDate(ctx context.Context ,time time.Time, userID uuid.UUID) ([]TopUser, error)
 }
 
 func NewService(repo Repository, profileService profile.Service) Service {
@@ -25,12 +25,13 @@ func NewService(repo Repository, profileService profile.Service) Service {
         profileService: profileService,
 	}
 }
-func (s *service) GetTopUsersForDate(ctx context.Context ,time time.Time) ([]User, error) {
+func (s *service) GetTopUsersForDate(ctx context.Context ,time time.Time, userID uuid.UUID) ([]TopUser, error) {
     log.Println("Getting top users for date ",time)
 
     date := time.Format("2006-01-02")
 
     users, err := s.repo.GetTopUsersForDate(ctx, date)
+    log.Println(users)
 
     if err != nil {
         log.Println("Error while getting top users for date: ",date)
@@ -39,20 +40,48 @@ func (s *service) GetTopUsersForDate(ctx context.Context ,time time.Time) ([]Use
 
     log.Println("Succesfully retrieved users for date ", date)
     
-    userArray := make([]User, len(users))
+    userArray := make([]TopUser, 0)
+
+    user, err := s.repo.GetRankOfUser(ctx, userID, date)
+    var top TopUser
+    top.Minutes = user.Minutes
+    top.Rank = user.Rank
+
+    if err != nil {
+        if err.Error() != "no rows in result set"{
+            log.Println("db error")
+            return nil, err
+        }
+    }else{    
+        u, err := s.profileService.GetUserByUUID(ctx, userID)
+
+        if err != nil {
+            log.Println("couldnt fetch user")
+            return nil , err
+        }
+
+        top.Username = u.Username
+        userArray = append(userArray, top)
+    }
+
     
     for i := range users{
-        user, err := s.profileService.GetUserByUUID(ctx, users[i])
-
+        user, err := s.profileService.GetUserByUUID(ctx, users[i].UserID)
+        
         if err != nil {
             log.Println("Error getting user details for userid ", users[i])
             return nil, err
         }
-
-        userArray[i].UserID = user.UUID
-        userArray[i].Username = user.Username
+        var topUser TopUser
+        topUser.Rank = i+1;
+        topUser.Minutes = users[i].Minutes
+        topUser.Username = user.Username
+        userArray = append(userArray, topUser)
     }
+
+   
     
+    log.Println(userArray)
     return userArray, nil
 }
 func (s *service) UpdateLeaderboardRecord(ctx context.Context, userID uuid.UUID,time time.Time, minutes int)error{

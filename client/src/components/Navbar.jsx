@@ -19,7 +19,7 @@ export default function Navbar() {
           </div>  */}
 
                     <div className="flex justify-center flex-col ">
-            <span className="text-lg font-black leading-none uppercase tracking-tight">
+            <span className="text-lg font-bold text-black-30 leading-none uppercase tracking-tight">
               Lock-In
             </span>
             {/* A small accent line */}

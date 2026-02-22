@@ -75,7 +75,7 @@ const AuthForm = () => {
             <motion.div 
                 initial={{ x: 10, y: 10 }}
                 animate={{ x: 0, y: 0 }}
-                className="w-full max-w-md bg-white border-3 border-black p-8 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]"
+                className="w-full max-w-md bg-white border-0.5 border-black p-8 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]"
             >
                 <header className="mb-8">
                     <h3 className="text-3xl font-black uppercase italic tracking-tighter text-black">
@@ -135,7 +135,7 @@ const AuthForm = () => {
                                             value={username} 
                                             onChange={(e) => setUsername(e.target.value)}
                                             onBlur={() => handleBlur('username')}
-                                            className={`border-2 transition-colors focus-visible:ring-0 focus:ring-0 shadow-neo ${isFieldInvalid('username', username) ? 'border-red-500 bg-red-50' : 'border-black'}`}
+                                            className={`border-2 transition-colors focus-visible:ring-0 focus:ring-0 shadow-neo ${isFieldInvalid('username', username) ? 'border-red-500 bg-red-50' : 'border-black/30'}`}
                                         />
                                         <div className="h-5 mt-1">
                                             <AnimatePresence>
@@ -155,7 +155,7 @@ const AuthForm = () => {
                                         value={email} 
                                         onChange={(e) => setEmail(e.target.value)}
                                         onBlur={() => handleBlur('email')}
-                                        className={`border-2 transition-colors focus-visible:ring-0 focus:ring-0 shadow-neo ${isFieldInvalid('email', email) ? 'border-red-500 bg-red-50' : 'border-black'}`}
+                                        className={`border-2 transition-colors focus-visible:ring-0 focus:ring-0 shadow-neo ${isFieldInvalid('email', email) ? 'border-red-500 bg-red-50' : 'border-black/30 '}`}
                                     />
                                     <div className="h-5 mt-1">
                                         <AnimatePresence>
@@ -178,7 +178,7 @@ const AuthForm = () => {
                                             value={password} 
                                             onChange={(e) => setPassword(e.target.value)}
                                             onBlur={() => handleBlur('password')}
-                                            className={`border-2 transition-colors focus-visible:ring-0 focus:ring-0 shadow-neo ${isFieldInvalid('password', password) ? 'border-red-500 bg-red-50' : 'border-black'}`}
+                                            className={`border-2 transition-colors focus-visible:ring-0 focus:ring-0 shadow-neo ${isFieldInvalid('password', password) ? 'border-red-500 bg-red-50' : 'border-black/30'}`}
                                         />
                                         <div className="h-5 mt-1">
                                             <AnimatePresence>
@@ -194,7 +194,7 @@ const AuthForm = () => {
                             <Button 
                                 disabled={isLoading}
                                 type="submit" 
-                                className="w-full h-14 bg-[#5294FF] text-black font-black uppercase text-lg border-3 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all"
+                                className="w-full h-14 bg-[#5294FF] text-black font-black uppercase text-lg border-2 border-black/30 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all"
                             >
                                 {isLoading ? 'Wait...' : (isLogin ? 'Login Now' : 'Create Account')}
                             </Button>
@@ -202,10 +202,10 @@ const AuthForm = () => {
                     )}
                 </AnimatePresence>
 
-                <div className="mt-6 pt-6 border-t-2 border-black flex flex-col items-center">
+                <div className="mt-6 pt-6 border-t-2 border-black/30 flex flex-col items-center">
                     <button 
                         onClick={() => setIsLogin(!isLogin)}
-                        className="text-xs font-black uppercase underline decoration-4 underline-offset-4 hover:text-gray-500 transition-colors"
+                        className="text-xs text-[black] uppercase underline decoration-2 underline-offset-4 hover:text-gray-500 transition-colors"
                     >
                         {isLogin ? "New here? Create an account" : "Got an account? Log in instead"}
                     </button>

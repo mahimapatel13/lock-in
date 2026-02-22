@@ -41,16 +41,39 @@ export const PomodoroProvider = ({ children }) => {
     setSeconds(0);
   }, []);
 
-  const submitSession = async (duration) => {
-    if(minutes != 0 || seconds != 0) return ;
+  const endSession = async () => {
 
-    const payload ={
-      session_duration: duration,
-      session_type: "focus"
-    }
+    console.log("ending session!")
+    const payload = {
+      end_time: new Date().toISOString()
+    };
+
+    console.log(payload.end_time); 
+    // Output example: "2026-01-10T15:22:00.000Z"
 
     try{
-      const resp = await api.post("/room/session", payload)
+      const resp = await api.post("/session/end", payload)
+      return resp.data
+    } catch(error){
+      console.log(error)
+      const message = error.message || "Failed to record session"
+      throw new Error(message);
+    }
+
+  }
+  const startSession = async () => {
+
+    console.log("starting session!")
+
+    const payload = {
+      start_time: new Date().toISOString()
+    };
+
+    console.log(payload.start_time); 
+    // Output example: "2026-01-10T15:22:00.000Z"
+
+    try{
+      const resp = await api.post("/session/start", payload)
       return resp.data
     } catch(error){
       console.log(error)
@@ -67,7 +90,18 @@ export const PomodoroProvider = ({ children }) => {
     // setIsFocusing (isActive && !isBreak);
     // console.log("focs", isFocusing)
     if (isActive) {
-      interval = setInterval(() => {
+      // if(!isBreak){
+      //   try {
+      //     const resp = startSession()
+      //     console.log(resp)
+      //   } catch (e) {
+      //     console.log(e.message)
+      //   }
+      // }
+      interval = setInterval(() => { 
+        if(seconds == 0 && minutes == MODES[currentMode].work){
+          startSession()
+        }     
         if (seconds > 0) {
           setSeconds((s) => s - 1);
         } else if (minutes > 0) {
@@ -77,7 +111,7 @@ export const PomodoroProvider = ({ children }) => {
           // Timer reached zero
           if (!isBreak) {
             try {
-              const resp = submitSession(MODES[currentMode].break)
+              const resp = endSession()
               console.log(resp)
             } catch (e) {
               console.log(e.message)
@@ -98,7 +132,9 @@ export const PomodoroProvider = ({ children }) => {
     return () => clearInterval(interval);
   }, [isActive, seconds, minutes, isBreak, currentMode]);
 
-  const toggleTimer = () => setIsActive(!isActive);
+  const toggleTimer = () => {
+    setIsActive(!isActive);
+  }
   
   const resetTimer = () => {
     setIsActive(false);

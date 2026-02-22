@@ -60,7 +60,7 @@ export default function Room() {
         <Button 
           onClick={handleExitRoom} 
           variant="outline" 
-          className="h-10 w-10 border-2 border-black bg-white shadow-[3px_3px_0px_0px_black] hover:bg-red-500 hover:text-white transition-all active:shadow-none active:translate-x-[1px] active:translate-y-[1px]"
+          className="h-10 w-10 border border-black/20 bg-white shadow-[3px_3px_0px_0px_black] hover:bg-red-500 hover:text-white transition-all active:shadow-none active:translate-x-[1px] active:translate-y-[1px]"
           title="Exit Room"
         >
           <LogOut size={18} />
@@ -70,7 +70,7 @@ export default function Room() {
           <Button 
             onClick={handleCopyLink} 
             variant="outline" 
-            className="h-10 w-10 border-2 border-black bg-white shadow-[3px_3px_0px_0px_black] hover:bg-[#A3E635] transition-all active:shadow-none active:translate-x-[1px] active:translate-y-[1px]"
+            className="h-9 w-10 border hover:text-white border-black/20 bg-white shadow-[3px_3px_0px_0px_black] hover:bg-[#A3E635] transition-all active:shadow-none active:translate-x-[1px] active:translate-y-[1px]"
             title="Copy Link"
           >
             {copied ? <Check size={18} className="text-green-600" /> : <Copy size={18} />}
@@ -82,7 +82,7 @@ export default function Room() {
       <div className="flex-1 flex mt-5 items-center justify-center gap-8 px-6 min-h-0">
         
         {/* Local User Video */}
-        <div className="w-1/2 max-w-xl aspect-video border-[3px] border-black bg-white shadow-[8px_8px_0px_0px_black] relative overflow-hidden">
+        <div className="w-1/2 max-w-105 aspect-video bg-white  relative overflow-hidden">
           <video 
             ref={userVideoRef} 
             autoPlay 
@@ -90,13 +90,13 @@ export default function Room() {
             muted 
             className="w-full h-full object-cover bg-zinc-900" 
           />
-          <div className="absolute bottom-2 left-2 bg-black text-white px-2 py-1 text-[10px] font-black uppercase">
+          <div className="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 text-[10px] font-black uppercase">
             You
           </div>
         </div>
 
         {/* Partner Video Slot */}
-        <div className="w-1/2 max-w-xl aspect-video border-[3px] border-black bg-white shadow-[8px_8px_0px_0px_black] relative overflow-hidden flex items-center justify-center">
+        <div className="w-1/2 max-w-105 aspect-video  bg-white relative overflow-hidden flex items-center justify-center">
           {hasPartner ? (
             <>
               <video 
@@ -105,7 +105,7 @@ export default function Room() {
                 playsInline 
                 className="w-full h-full object-cover bg-zinc-900" 
               />
-              <div className="absolute bottom-2 left-2 bg-black text-white px-2 py-1 text-[10px] font-black uppercase">
+              <div className="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 text-[10px] font-black uppercase">
                 Partner
               </div>
             </>

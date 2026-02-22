@@ -45,4 +45,5 @@ func RegisterRoutes(
 
 	RegisterRoomRoutes(v1, studyRoomService,  studySessionService, ticketService)
 	RegisterProfileRoutes(v1, profileService)
+	RegisterLeaderboardRoutes(v1,leaderboardService)
 }

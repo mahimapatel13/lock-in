@@ -1,8 +1,7 @@
 package response
 
-import "github.com/google/uuid"
-
 type TopUser struct {
-	Username string
-	UserID   uuid.UUID
+	Username       string `json:"username"`
+	MinutesFocused int    `json:"minutes_focused"`
+	Rank           int    `json:"rank"`
 }

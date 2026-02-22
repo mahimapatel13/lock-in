@@ -16,9 +16,9 @@ func RegisterLeaderboardRoutes(
 
     h := handlers.NewLeaderboardHandler(leaderboardService)
 
-    leaderboard := r.Group("/leadergroup")
+    leaderboard := r.Group("/leaderboard")
     {
-        leaderboard.POST("/top", middleware.JWTMiddleware(), h.GetTopUsers)
+        leaderboard.POST("/top", middleware.JWTMiddleware(),h.GetTopUsers)
     }
 
 }

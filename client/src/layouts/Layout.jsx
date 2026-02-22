@@ -69,7 +69,7 @@ export default function Layout() {
                     <PomodoroClock />
                   )}
 
-                  <div className={`${!isRoomActive ? 'mt-8' : 'h-full'} w-full max-w-5xl px-4 flex justify-center relative`}>
+                    <div className={`${!isRoomActive ? 'mt-4' : 'h-full'} w-full max-w-5xl px-4 flex justify-center relative`}>
                     <div className="w-full">
                       <Outlet context={{ isFocusing }} />
                     </div>

@@ -56,7 +56,7 @@ export default function Room() {
     <div className="relative h-full w-full flex flex-col overflow-hidden bg-transparent">
       
       {/* ACTION BUTTONS */}
-      <div className="absolute -top-4 right-0 flex flex-col gap-61 z-50 p-4">
+      <div className="absolute -top-4 right-0 flex flex-col gap-48 z-50 p-4">
         <Button 
           onClick={handleExitRoom} 
           variant="outline" 
@@ -79,45 +79,67 @@ export default function Room() {
       </div>
 
       {/* VIDEO CONTAINER */}
-      <div className="flex-1 flex mt-5 items-center justify-center gap-8 px-6 min-h-0">
-        
-        {/* Local User Video */}
-        <div className="w-1/2 max-w-105 aspect-video bg-white  relative overflow-hidden">
-          <video 
-            ref={userVideoRef} 
-            autoPlay 
-            playsInline 
-            muted 
-            className="w-full h-full object-cover bg-zinc-900" 
-          />
-          <div className="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 text-[10px] font-black uppercase">
-            You
-          </div>
-        </div>
-
-        {/* Partner Video Slot */}
-        <div className="w-1/2 max-w-105 aspect-video  bg-white relative overflow-hidden flex items-center justify-center">
-          {hasPartner ? (
-            <>
-              <video 
-                ref={partnerVideoRef} 
-                autoPlay 
-                playsInline 
-                className="w-full h-full object-cover bg-zinc-900" 
-              />
-              <div className="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 text-[10px] font-black uppercase">
-                Partner
-              </div>
-            </>
-          ) : (
-            <div className="flex flex-col items-center justify-center animate-pulse">
-               <p className="font-black uppercase text-xs tracking-widest text-zinc-500">
-                Waiting for partner...
-              </p>
-            </div>
-          )}
+      {/* VIDEO CONTAINER */}
+<div className="flex-1 flex items-center justify-center gap-6 lg:gap-12 px-6 min-h-0 rounded-3xl  border-black/5 mx-4 mb-4">
+  
+  {/* Local User Video Frame */}
+  <div className="w-1/2 max-w-[480px] group relative">
+    {/* The Frame / Border effect */}
+    <div className="relative aspect-video bg-zinc-900 rounded-2xl overflow-hidden border-2 border-black/30 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)] transition-transform hover:scale-[1.02]">
+      <video 
+        ref={userVideoRef} 
+        autoPlay 
+        playsInline 
+        muted 
+        className="w-full h-full object-cover" 
+      />
+      {/* Label Tag */}
+      <div className="absolute top-3 left-3 flex items-center gap-2">
+        <div className="bg-black/80 backdrop-blur-md text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border border-white/20">
+          You (Live)
         </div>
       </div>
+    </div>
+  </div>
+
+  {/* Partner Video Slot Frame */}
+  <div className="w-1/2 max-w-[480px] group relative">
+    <div className={`relative aspect-video rounded-2xl overflow-hidden border-2 border-black/30 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)] transition-transform hover:scale-[1.02] ${!hasPartner ? 'bg-zinc-100' : 'bg-zinc-900'}`}>
+      {hasPartner ? (
+        <>
+          <video 
+            ref={partnerVideoRef} 
+            autoPlay 
+            playsInline 
+            className="w-full h-full object-cover" 
+          />
+          <div className="absolute top-3 left-3">
+            <div className="bg-black/80 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border border-black/10">
+              Partner
+            </div>
+          </div>
+        </>
+      ) : (
+
+        // <div className="flex flex-col items-center justify-center animate-pulse">
+
+        //        <p className="font-black uppercase text-xs tracking-widest text-zinc-500">
+
+        //         Waiting for partner...
+
+        //       </p>
+
+        //     </div>
+        <div className="flex flex-col items-center justify-center h-full space-y-3">
+          {/* <div className="w-12 h-12 rounded-full border-4 border-dashed animate-spin border-zinc-300 animate-spin-slow" /> */}
+          <p className="font-black uppercase animate-pulse text-[10px] tracking-[0.2em] text-zinc-400">
+            Waiting for partner...
+          </p>
+        </div>
+      )}
+    </div>
+  </div>
+</div>
     </div>
   );
 }

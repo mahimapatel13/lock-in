@@ -20,9 +20,9 @@ import { usePomodoro } from "@/context/PomodoroContext";
 // };
 
 const MODES = {
-  STANDARD: { label: "25/5", work: 1, break: 1 },
-  LONG: { label: "50/10", work: 1, break: 1 },
-  DEEP: { label: "90/30", work: 1, break: 1 },
+  STANDARD: { label: "25/5", work: 20, break: 1 },
+  LONG: { label: "50/10", work: 20, break: 1 },
+  DEEP: { label: "90/30", work: 20, break: 1 },
 };
 
 

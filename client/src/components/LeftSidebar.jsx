@@ -60,7 +60,7 @@ const LeftSidebar = () => {
                 <div className="flex flex-1 flex-col" >
                   <Link to="/room/create" className="flex">
                     <LayoutDashboard size={18}/>
-                    <div className=" pl-2 text-black/70 hover:text-black font-bold text-center ">Create Room </div>
+                    <div className=" pl-2 text-black/70 hover:text-black  text-center ">Create Room </div>
                   </Link>
                 </div>
               )}
@@ -91,7 +91,7 @@ const LeftSidebar = () => {
                 <div className="flex flex-1 flex-col" >
                   <Link to="/room/create" className="flex">
                     <Users size={18} />
-                    <span className=" pl-2 hover:text-black  text-black/70 font-bold">Join Room</span>
+                    <span className=" pl-2 hover:text-black  text-black/70 ">Join Room</span>
                   </Link>
                 </div>
               )}
@@ -99,21 +99,21 @@ const LeftSidebar = () => {
               <div className="flex flex-1 flex-col" >
                 <Link to="/report" className="flex">
                   <ChartColumn size={18} />
-                  <span className=" pl-2 hover:text-black text-black/70 font-bold">Report</span>
+                  <span className=" pl-2 hover:text-black text-black/70 ">Report</span>
                 </Link>
               </div>
 
               <div className="flex flex-1 flex-col" >
                 <Link to="/leaderboard" className="flex">
                   <Trophy size={18} />
-                  <span className=" pl-2 hover:text-black text-black/70 font-bold">Leaderboard</span>
+                  <span className=" pl-2 hover:text-black text-black/70 ">Leaderboard</span>
                 </Link>
               </div>
 
               <div className="flex flex-1 flex-col" >
                 <Link to="/community" className="flex">
                   <Users size={18} />
-                  <span className=" pl-2 hover:text-black  text-black/70 font-bold">Join Communities</span>
+                  <span className=" pl-2 hover:text-black  text-black/70 ">Join Communities</span>
                 </Link>
               </div>
 
@@ -130,7 +130,7 @@ const LeftSidebar = () => {
               <div className="flex flex-1 flex-col" >
                   <Link to="/room/create" className="flex">
                     <Settings size={18} />
-                    <span className=" pl-2 text-black/70 hover:text-black font-bold">General Settings</span>
+                    <span className=" pl-2 text-black/70 hover:text-black ">General Settings</span>
                   </Link>
                 </div>
 

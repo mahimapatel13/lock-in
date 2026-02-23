@@ -57,34 +57,35 @@ export default function Layout() {
         
           
             <div className="flex  layout-wrapper flex-row flex-1 overflow-hidden ">
-
       
               
-              <main className={`flex-1 main-content flex flex-col overflow-hidden relative transition-colors duration-300 ${isFocusing ? 'bg-graph-paper-red' : 'bg-graph-paper-blue'}`}>
+              <main className={`flex-1 main-content flex flex-col overflow-hidden relative transition-colors duration-300 ${isFocusing && !isRoomActive ? 'bg-graph-paper-red' : 'bg-graph-paper-blue'}`}>
                 
-                <div className={`flex-1 overflow-y-auto p-6 lg:p-10 flex flex-col items-center ${!isRoomActive ? 'justify-center' : 'justify-start'}`}>
+                {/* 1. Main Content / Video Area */}
+                {/* We use flex-grow here so this section pushes the footer to the very bottom */}
+                <div className={`flex-grow overflow-y-auto p-6 lg:p-10 flex flex-col items-center ${!isRoomActive ? 'justify-center' : 'justify-start'}`}>
                   
-                  {/* Timer shown in center when not in a room */}
-                  {!isRoomActive && (
-                    <PomodoroClock />
-                  )}
+                  {!isRoomActive && <PomodoroClock />}
 
-                    <div className={`${!isRoomActive ? 'mt-4' : 'h-full'} w-full max-w-5xl px-4 flex justify-center relative`}>
-                    <div className="w-full">
+                  <div className={`w-full max-w-5xl px-4 flex justify-center relative ${isRoomActive ? 'flex-1' : 'mt-4'}`}>
+                    <div className="w-full h-full">
                       <Outlet context={{ isFocusing }} />
                     </div>
                   </div>
                 </div>
 
-                {/* Footer Timer (Only shown when in a room) */}
+                {/* 2. Enhanced Footer Timer */}
                 {isRoomActive && (
-                  <footer className="w-full py-6 px-10 shrink-0 z-10 relative">
-                    <div className="max-w-4xl mx-auto flex items-center justify-center relative">
-                      <PomodoroClock />
+                  <footer className=" backdrop-blur-md border-t-2 border-black/60 shrink-0 z-10">
+                    {/* Increased py-12 (vertical padding) and min-h to make the footer taller */}
+                    <div className="mx-auto flex items-center justify-center py-12 min-h-70">
+                      {/* Wrapping the clock in a scale transform if you want it physically larger */}
+                      
+                        <PomodoroClock />
+                      
                     </div>
                   </footer>
                 )}
-
               </main>
 
 

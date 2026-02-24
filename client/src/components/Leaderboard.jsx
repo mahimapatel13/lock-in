@@ -44,7 +44,7 @@ const Leaderboard = () => {
       <div className="border-[3px] border-black shadow-[4px_4px_0px_0px_black] bg-white overflow-hidden">
         
         {/* TOP STATUS BAR */}
-        <div className="bg-white border-b-[3px] border-black px-4 py-2 flex justify-between items-center">
+        <div className="bg-white  border-black px-4 py-2 flex justify-between items-center">
           <div className="flex gap-1.5">
             <div className="w-2 h-2 bg-black" />
             <div className="w-2 h-2 bg-black/20" />

@@ -5,7 +5,7 @@ export default function Navbar() {
   const navLinks = ["Docs", , "Community"]
 
   return (
-    <nav className=" sticky top-0 z-50 w-full border-b-2 border-black px-40 h-16 flex items-center justify-between ">
+    <nav className=" sticky top-0 z-50 backdrop-blur-sm bg-white w-full border-b-2 border-black/50 px-40 h-16 flex items-center justify-between ">
       <div className="flex items-center gap-8">
                     <div className="flex justify-center flex-col ">
             <span className="text-lg font-bold text-black-30 leading-none uppercase tracking-tight">

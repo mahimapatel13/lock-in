@@ -49,7 +49,7 @@ export default function PomodoroClock() {
   console.log("Pomodoro check .. current use is focusing ? .. ", currentMode)
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-10"> 
+    <div className="w-full max-w-4xl overflow-visible max-h-screen sticky mx-auto space-y-10 "> 
       
       {/* MAIN CLOCK UNIT */}
       <div className={`

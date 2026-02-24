@@ -23,6 +23,12 @@ function App() {
           <Route element={<LeaderboardLayout/>}>
            <Route path="/leaderboard" element= {<Leaderboard/>} />
           </Route>
+           <Route element={<LeaderboardLayout/>}>
+           <Route path="/report" element= {<Leaderboard/>} />
+          </Route>
+           <Route element={<LeaderboardLayout/>}>
+           <Route path="/community" element= {<Leaderboard/>} />
+          </Route>
         </Route>
 
         <Route path="*" element={<div>Page Not Found</div>} />

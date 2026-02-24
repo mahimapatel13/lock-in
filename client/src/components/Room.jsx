@@ -53,24 +53,24 @@ export default function Room() {
   }, [roomID]); 
 
   return (
-    <div className="relative h-full w-full flex flex-col overflow-hidden bg-transparent">
+    <div className="relative w-full flex flex-col  bg-transparent">
       
       {/* ACTION BUTTONS */}
-      <div className="absolute -top-4 right-0 flex flex-col gap-48 z-50 p-4">
+      <div className="absolute -top-13 right-0 flex flex-col gap-62 z-1 p-4">
         <Button 
           onClick={handleExitRoom} 
           variant="outline" 
-          className="h-10 w-10 border border-black/20 bg-white shadow-[3px_3px_0px_0px_black] hover:bg-red-500 hover:text-white transition-all active:shadow-none active:translate-x-[1px] active:translate-y-[1px]"
+          className="h-8 w-8 border border-black/20 bg-white shadow-[3px_3px_0px_0px_black] hover:bg-red-500 hover:text-white transition-all active:shadow-none active:translate-x-[1px] active:translate-y-[1px]"
           title="Exit Room"
         >
-          <LogOut size={18} />
+          <LogOut size={10} />
         </Button>
 
         {!hasPartner && !isFocusMode && (
           <Button 
             onClick={handleCopyLink} 
             variant="outline" 
-            className="h-9 w-10 border hover:text-white border-black/20 bg-white shadow-[3px_3px_0px_0px_black] hover:bg-[#A3E635] transition-all active:shadow-none active:translate-x-[1px] active:translate-y-[1px]"
+            className="h-8 w-8 border hover:text-white border-black/20 bg-white shadow-[3px_3px_0px_0px_black] hover:bg-[#A3E635] transition-all active:shadow-none active:translate-x-[1px] active:translate-y-[1px]"
             title="Copy Link"
           >
             {copied ? <Check size={18} className="text-green-600" /> : <Copy size={18} />}

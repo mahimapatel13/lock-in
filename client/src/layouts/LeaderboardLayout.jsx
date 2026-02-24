@@ -2,30 +2,32 @@ import RightSidebar from '@/components/RightSidebar'
 import Navbar from '@/components/Navbar'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import LeftSidebar from "@/components/LeftSidebar"
+import Footer from '@/components/Footer'
 
 export default function LeaderboardLayout() {
  
 
   return (
-    <div className="flex flex-col h-screen w-full bg-white overflow-hidden">
+
+     <div className="flex flex-col min-h-screen w-full bg-white">
       <Navbar />
 
-    
-        <div className="flex w-full h-full overflow-hidden">
-          
-          {/* Sidebar hides during Focus Mode */}
-            <aside 
-                className="transition-all duration-500 ease-in-out border-r-2  border-black bg-white w-65 opacity-100">
-                {/* Important: The content inside needs a fixed width 
-                  so it doesn't "squish" while the parent shrinks.
-                */}
-                <div className="">
-                  <LeftSidebar />
-                </div>
-              </aside>
+      {/* Main row */}
+      <div className="flex flex-1 w-full">
         
-          
-            <div className="flex  layout-wrapper flex-row flex-1 overflow-hidden ">
+        {/* Left Sidebar */}
+        <aside 
+          className={`
+            transition-all duration-500 ease-in-out border-r-2 border-black bg-white
+            w-65 opacity-100
+          `}
+        >
+          <div>
+            <LeftSidebar />
+          </div>
+        </aside>
+
+        <div className="flex  layout-wrapper flex-row flex-1 overflow-hidden ">
 
       
               
@@ -33,27 +35,25 @@ export default function LeaderboardLayout() {
                       <Outlet  />
               </main>
 
-
-              <aside 
-                className="transition-all duration-500 ease-in-out border-r-2  border-black bg-white w-50 opacity-100">
-                {/* Important: The content inside needs a fixed width 
-                  so it doesn't "squish" while the parent shrinks.
-                */}
-                <div className="">
-                  <RightSidebar />
-                </div>
-              </aside>
-
-              {/* Right Sidebar hides during Focus Mode */}
-              {/* {!isFocusing && ( */}
-                  {/* <aside className="flex overflow-hidden">  */}
-                      {/* <RightNavSidebar className={`${isFocusing ? '' : 'is-open'}`} /> */}
-                  {/* </aside> */}
-                  
-              {/* )} */}
-
+       
+           
+          <aside 
+            className={`
+              transition-all duration-500 ease-in-out border-l-2 border-black/50 bg-white
+             w-50 opacity-100
+            `}
+          >
+            <div>
+              <RightSidebar />
             </div>
+          </aside>
+
         </div>
+      </div>
+
+    
+    <Footer />
     </div>
+  
   )
 }

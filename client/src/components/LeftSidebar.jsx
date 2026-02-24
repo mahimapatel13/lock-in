@@ -13,25 +13,11 @@ const LeftSidebar = () => {
   const location = useLocation();
   const isRoomActive = location.pathname.includes('/room/');
   return (
-  <div className="w-65 h-screen bg-graph-paper sticky text-[14px] flex flex-col border-r-2">
-      {/* <div className="px-2 py-4 border-b-2 ">
-        <div className="flex  items-center gap-3 p-3 bg-main border-2 border-border shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-base">
-                  <div className="h-10 w-10 rounded-full border-2 border-border bg-white flex items-center justify-center font-bold text-black shrink-0">
-                    JD
-                  </div>
-                  <div className="flex flex-col min-w-0">
-                    <span className="font-heading text-sm truncate text-black">
-                      John Doe
-                    </span>
-                    <span className="text-xs opacity-80 truncate">
-                      @johndoe
-                    </span>
-                  </div>
-        </div>
-      </div> */}
+  <div className="w-65 h-screen overflow-visible bg-graph-paper border-black/50 sticky text-[14px] flex flex-col border-r-2">
+      
 
       {/* section for joining and creating room/communities */}
-        <div className=" flex flex-col gap-3 px-2 py-4 h-80 border-b-2">
+        <div className=" flex flex-col gap-3 px-2 py-4 h-80 border-b-2 border-black/50 overflow-visible">
           <div className="text-black/75 font-bold decoration-2 underline underline-offset-5 text-center text-sm uppercase pb-4">
                 Application
               </div>
@@ -122,7 +108,7 @@ const LeftSidebar = () => {
 
 
           {/* // settings */}
-          <div className=" flex flex-col gap-3 px-2 py-4 h-30 border-b-2">
+          <div className=" flex flex-col gap-3 px-2 py-4 h-30 border-black/50 border-b-2">
               
               <div className="text-black/75 font-bold decoration-2 underline underline-offset-5 text-center text-sm uppercase pb-4">
                 Settings

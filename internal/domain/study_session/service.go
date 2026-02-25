@@ -20,6 +20,7 @@ type service struct {
 type Service interface {
 	StartSession(ctx context.Context, userID uuid.UUID, startTime time.Time) error
 	RecordSession(ctx context.Context, userID uuid.UUID, endTime time.Time) error
+	GetAllSessions(ctx context.Context,userID uuid.UUID) ([]Session, error)
 }
 
 func NewService(repo Repository, profileService profile.Service, leaderboardService leaderboard.Service) Service {
@@ -67,6 +68,30 @@ func (s *service) StartSession(ctx context.Context, userID uuid.UUID, startTime 
 	log.Println("succesfully started sess..")
 
 	return nil
+}
+func (s *service)GetAllSessions(ctx context.Context,userID uuid.UUID) ([]Session, error){
+
+	log.Println("Checking if user exists....")
+
+	err := s.CheckUser(ctx, userID)
+
+	if err != nil {
+		log.Println("No user found for the uuid")
+		return nil, err
+	}
+
+	log.Println("getting all session..")
+
+	sessions, err := s.repo.GetAllSessions(ctx, userID)
+
+	if err != nil {
+		log.Println(err.Error())
+		return nil, err
+	}
+
+	log.Println("succesfully retrieved all sessions..")
+
+	return sessions, nil
 }
 
 func (s *service) RecordSession(ctx context.Context, userID uuid.UUID, endTime time.Time) error {

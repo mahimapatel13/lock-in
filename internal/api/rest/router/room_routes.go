@@ -5,7 +5,6 @@ import (
 	// "github.com/jackc/pgx/v5/pgxpool"
 	"lock-in/internal/api/rest/handlers"
 	"lock-in/internal/api/rest/middleware"
-	"lock-in/internal/api/rest/request"
 	"lock-in/internal/domain/study_room"
 	"lock-in/internal/domain/study_session"
 	"lock-in/internal/domain/ticket_manager"
@@ -27,13 +26,6 @@ func RegisterRoomRoutes(
 		room.POST("/verify/:roomID", middleware.JWTMiddleware(), h.VerifyRoom)
 		room.POST("/ticket/:roomID", middleware.JWTMiddleware(), h.GenerateTicket)
 		room.GET("/ws/:ticket", h.JoinRoomRequest)
-	}
-
-	session := r.Group("/session")
-	{
-		session.POST("/start", middleware.JWTMiddleware(), middleware.ReqValidate[request.StartSessionRequest](), h.StartSessionRequest)
-		session.POST("/end", middleware.JWTMiddleware(), middleware.ReqValidate[request.RecordSessionRequest](), h.RecordSessionRequest)
-
 	}
 
 }

@@ -16,5 +16,7 @@ type Repository interface {
 	RecordSessionDetails(ctx context.Context, userID uuid.UUID, sessionDuration int, endTime time.Time) error
 	SaveAndClearSession(ctx context.Context, userID uuid.UUID, minutes int, endTime time.Time, startTime time.Time)error
 
+	GetAllSessions(ctx context.Context,userID uuid.UUID) ([]Session, error)
+
 
 }

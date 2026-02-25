@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"errors"
 	"lock-in/internal/domain/study_session"
 	"log"
 	"time"
@@ -99,6 +100,40 @@ func (r *studySessionRepository) SaveAndClearSession(ctx context.Context, userID
     }
 
     return nil
+}
+func (r *studySessionRepository)GetAllSessions(ctx context.Context,userID uuid.UUID) ([]study_session.Session, error){
+    log.Println("Getting all sessions for user ", userID, " from db")
+
+    
+    rows ,err := r.pool.Query(ctx, "SELECT session_duration, endtime FROM study_schema.study_session WHERE user_id = $1 ORDER BY end_time DESC LIMIT 20", &userID)
+    
+    if err != nil {
+        log.Println("Failed to get all sessions")
+        return nil, err
+    }
+
+    defer rows.Close()
+
+    var sessions []study_session.Session
+
+    for rows.Next(){
+        var sess study_session.Session
+        if err := rows.Scan(&sess.Duration,&sess.Time ); err != nil {
+            log.Println("Failed to scan leaderboard row")
+            return nil, err
+        }
+
+        sessions = append(sessions, sess)
+    }
+
+    if err := rows.Err(); err!= nil {
+        log.Println("Error occured while iterating over records.")
+        return nil, errors.New("Iteration error in db")
+    }
+
+    log.Println("succesfully fetched session records from session table")
+    return sessions, nil
+
 }
 
 // RecordSessionDetails records session details in database

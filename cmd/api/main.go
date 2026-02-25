@@ -42,7 +42,6 @@ func main(){
 	emailWorker := email_worker.NewEmailWorkerPool(cfg.SMTPConfig)
 	log.Println(cfg)
 
-
 	for w := 1; w <= 3; w++ {
         go emailWorker.Worker(w)
     }

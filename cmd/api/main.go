@@ -38,7 +38,7 @@ func main(){
 
 
 	log.Println("Reading .env")
-	
+
 	cfg := config.LoadEnv()
 	emailWorker := email_worker.NewEmailWorkerPool(cfg.SMTPConfig)
 	log.Println(cfg)
@@ -57,6 +57,7 @@ func main(){
 	r.Use(cors.New(cors.Config{
         AllowOrigins:     []string{
 			"http://localhost:5173",
+			"https://focus-lock-in.vercel.app",
 
 		},
         AllowMethods:     []string{"POST", "GET", "OPTIONS", "PUT", "DELETE"},

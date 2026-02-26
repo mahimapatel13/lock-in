@@ -45,14 +45,15 @@ func getEnvValue(key string, defaultValue string) string {
 	return defaultValue
 }
 
-// LoadEnv loads the environment and file and configures the app using the env file
 func LoadEnv() Config {
-	log.Println("Reading .env file")
-	err := godotenv.Load(".env")
+	log.Println("Loading environment configuration")
 
+	// Try loading .env only for local development
+	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatalf("Error in loading .env file: %v", err)
+		log.Println(".env file not found — assuming production environment")
 	}
+
 	dbConfig := loadDBConfig()
 	smtpConfig := loadSMTPConfig()
 	jwtConfig := loadJWTConfig()
@@ -63,7 +64,6 @@ func LoadEnv() Config {
 		JWTConfig:      jwtConfig,
 	}
 
-	log.Println(config)
 	return config
 }
 

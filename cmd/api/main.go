@@ -38,6 +38,7 @@ func main(){
 
 
 	log.Println("Reading .env")
+	
 	cfg := config.LoadEnv()
 	emailWorker := email_worker.NewEmailWorkerPool(cfg.SMTPConfig)
 	log.Println(cfg)

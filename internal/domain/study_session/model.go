@@ -1,6 +1,7 @@
 package study_session
 
 import (
+	"lock-in/internal/api/rest/response"
 	"time"
 
 	uuid "github.com/google/uuid"
@@ -19,4 +20,11 @@ type Session struct {
 	UserID   uuid.UUID
 	Duration uint32 // seconds
 	Time     time.Time
+}
+
+func (s Session) ToResponse() response.SessionResponse {
+	return response.SessionResponse{
+		MinutesDuration: int(s.Duration),
+		EndTime:         s.Time,
+	}
 }

@@ -1,5 +1,5 @@
 
-import { React, createContext, useContext, useCallback,useMemo, useState, useEffect } from "react";
+import { React, createContext, useContext, useLocation,useCallback,useMemo, useState, useEffect } from "react";
 import api from "@/utils/api";
 
 const PomodoroContext = createContext();
@@ -9,7 +9,7 @@ export const usePomodoro = () => {
 }
 
 const MODES = {
-  STANDARD: { label: "25/5", work: 20, break: 1 },
+  STANDARD: { label: "25/5", work: 1, break: 1 },
   LONG: { label: "50/10", work: 1, break: 1 },
   DEEP: { label: "90/30", work: 1, break: 1 },
 };
@@ -21,6 +21,7 @@ const MODES = {
 //   DEEP: { label: "90/30", work: 90, break: 30 },
 // };
 export const PomodoroProvider = ({ children }) => {
+
 
   const [currentMode, setCurrentMode] = useState("STANDARD");
   const [minutes, setMinutes] = useState(MODES.STANDARD.work);

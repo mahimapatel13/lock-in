@@ -21,8 +21,7 @@ func RegisterSessionRoutes(
 	{
 		session.POST("/start", middleware.JWTMiddleware(), middleware.ReqValidate[request.StartSessionRequest](), h.StartSessionRequest)
 		session.POST("/end", middleware.JWTMiddleware(), middleware.ReqValidate[request.RecordSessionRequest](), h.RecordSessionRequest)
-		session.GET("/all", middleware.AuthMiddleware(), h.GetAllSessions)
-
+		session.GET("/all", middleware.JWTMiddleware(), h.GetAllSessions)
 	}
 
 }

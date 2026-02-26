@@ -6,7 +6,7 @@ import { RoomProvider } from "@/context/RoomContext";
 import Layout from './layouts/Layout';
 import Leaderboard from './components/Leaderboard';
 import LeaderboardLayout from './layouts/LeaderboardLayout';
-
+import Report from './components/Report';
 
 function App() {
   return (
@@ -24,7 +24,7 @@ function App() {
            <Route path="/leaderboard" element= {<Leaderboard/>} />
           </Route>
            <Route element={<LeaderboardLayout/>}>
-           <Route path="/report" element= {<Leaderboard/>} />
+           <Route path="/report" element= {<Report/>} />
           </Route>
            <Route element={<LeaderboardLayout/>}>
            <Route path="/community" element= {<Leaderboard/>} />

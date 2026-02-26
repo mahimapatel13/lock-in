@@ -26,22 +26,7 @@ const FocusHero = () => {
       className="hidden lg:flex flex-col justify-center pr-12 max-w-2xl selection:bg-black selection:text-[#5294FF]"
     >
       {/* 1. SYSTEM HEADER */}
-      <motion.div variants={itemVars} className="flex items-center gap-6 mb-8">
-        {/* <div className="flex items-center gap-2 group">
-          <div className="relative">
-            <Globe className="w-4 h-4 text-black group-hover:text-[#5294FF] transition-colors" />
-            <span className="absolute -top-1 -right-1 flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#5294FF] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#5294FF]"></span>
-            </span>
-          </div>
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-black">Uptime: 99.9% / Mesh_Active</span>
-        </div>
-        <div className="h-[1px] flex-1 bg-black/10" />
-        <Badge className="rounded-none border-2 border-black bg-white text-black px-2 py-0 text-[9px] font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-          PUBLIC_BETA_01
-        </Badge> */}
-      </motion.div>
+     
 
       {/* 2. THE BRAND: THE MANIFESTO */}
       <motion.div variants={itemVars} className="mb-12">
@@ -60,10 +45,10 @@ const FocusHero = () => {
           </h1>
         </div>
 
-        <div className="mt-10 flex flex-col gap-3 border-l-4 border-black pl-6">
-          <p className="text-3xl font-[1000] leading-none text-black uppercase italic tracking-tighter">
+        <div className="mt-10 flex flex-col gap-3 border-l-4 border-black/75 pl-6">
+          <p className="text-3xl font-[1000] leading-none text-black/70 uppercase italic tracking-tighter">
             Distraction is <span className="text-[#5294FF]">Default.</span> <br />
-            Focus is a <span className="underline decoration-[#5294FF] decoration-8 underline-offset-4">Choice.</span>
+            Focus is a <span className="underline decoration-[#5294FF] text-black/90 decoration-8 underline-offset-4">Choice.</span>
           </p>
           <p className="text-[14px] font-bold text-black/60 max-w-sm leading-tight mt-2">
             The decentralized engine for deep work. No feeds, no algorithms, no noise. Just you, your circle, and the timer.
@@ -74,7 +59,7 @@ const FocusHero = () => {
       {/* 3. THE INSTRUMENT PANEL */}
       <div className="grid grid-cols-12 gap-4">
         
-        {/* TIMER: POMODORO ENGINE */}
+        {/* TIMER: POMODORO ENGINE
         <motion.div
           variants={itemVars}
           whileHover={{ x: 4, y: -4 }}
@@ -101,10 +86,10 @@ const FocusHero = () => {
                 <span>Work_Session_04</span>
             </div>
           </div>
-        </motion.div>
+        </motion.div> */}
 
         {/* TOPOLOGY: P2P VERIFICATION */}
-        <motion.div
+        {/* <motion.div
           variants={itemVars}
           whileHover={{ x: 4, y: -4 }}
 
@@ -131,10 +116,10 @@ const FocusHero = () => {
               MESH_LINK <br /> <span className="text-[#5294FF]">VERIFIED</span>
             </p>
           </div>
-        </motion.div>
+        </motion.div> */}
 
         {/* MARQUEE: THE RALLY CRY */}
-        <motion.div
+        {/* <motion.div
           variants={itemVars}
           className="col-span-12 border-3 border-black bg-[#FFD600] text-black py-2 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden"
         >
@@ -151,7 +136,7 @@ const FocusHero = () => {
               </span>
             ))}
           </motion.div>
-        </motion.div>
+        </motion.div> */}
       </div>
 
       {/* 4. FOOTER */}

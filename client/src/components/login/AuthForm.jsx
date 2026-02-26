@@ -78,7 +78,7 @@ const AuthForm = () => {
                 className="w-full max-w-md bg-white border-0.5 border-black p-8 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]"
             >
                 <header className="mb-8">
-                    <h3 className="text-3xl font-black uppercase italic tracking-tighter text-black">
+                    <h3 className="text-3xl font-black uppercase italic tracking-tighter text-black/80">
                         {isLogin ? 'Login' : 'Join Us'}
                     </h3>
                     <p className="text-sm font-bold text-gray-600">
@@ -129,7 +129,7 @@ const AuthForm = () => {
                             <div className="space-y-1">
                                 {!isLogin && (
                                     <div className="flex flex-col">
-                                        <label className="block text-xs font-black uppercase mb-1">Username</label>
+                                        <label className="block text-xs text-black/75 font-black uppercase mb-1">Username</label>
                                         <Input 
                                             placeholder="username"
                                             value={username} 
@@ -148,7 +148,7 @@ const AuthForm = () => {
                                 )}
 
                                 <div className="flex flex-col">
-                                    <label className="block text-xs font-black uppercase mb-1">Email</label>
+                                    <label className="block text-xs text-black/75 font-black uppercase mb-1">Email</label>
                                     <Input 
                                         type="email" 
                                         placeholder="hello@work.com"
@@ -169,7 +169,7 @@ const AuthForm = () => {
                                 {isLogin && (
                                     <div className="flex flex-col">
                                         <div className="flex justify-between items-center mb-1">
-                                            <label className="block text-xs font-black uppercase">Password</label>
+                                            <label className="block text-xs text-black/75 font-black uppercase">Password</label>
                                             <button type="button" onClick={() => navigate('/forgot-password')} className="text-[10px] font-black uppercase underline decoration-2 underline-offset-2 hover:text-[#5294FF]">Forgot?</button>
                                         </div>
                                         <Input 

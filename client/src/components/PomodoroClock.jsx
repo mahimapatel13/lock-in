@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useLocation, useCallback } from "react";
 import { Button } from "@/components/ui/button"; 
 import { Play, Pause, RotateCcw, Coffee, Brain, Timer, AlertOctagon, ArrowRight, ArrowLeft } from "lucide-react";
 import {
@@ -13,14 +13,10 @@ import {
 } from "@/components/ui/drawer";
 import { usePomodoro } from "@/context/PomodoroContext";
 
-// const MODES = {
-//   STANDARD: { label: "25/5", work: 25, break: 5 },
-//   LONG: { label: "50/10", work: 50, break: 10 },
-//   DEEP: { label: "90/30", work: 90, break: 30 },
-// };
+
 
 const MODES = {
-  STANDARD: { label: "25/5", work: 20, break: 1 },
+  STANDARD: { label: "25/5", work: 1, break: 1 },
   LONG: { label: "50/10", work: 20, break: 1 },
   DEEP: { label: "90/30", work: 20, break: 1 },
 };
@@ -43,7 +39,8 @@ export default function PomodoroClock() {
     resetTimer,
     handleModeChange,
   } = usePomodoro();
-  
+
+ 
   const isFocusing = isActive && !isBreak;
 
   console.log("Pomodoro check .. current use is focusing ? .. ", currentMode)

@@ -7,7 +7,7 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-12 justify-between">
         {/* Left Section */}
         <div className="flex flex-col gap-4">
-          <h2 className="text-2xl text-black/80 font-bold uppercase tracking-tight">Lock-In</h2>
+          <h2 className="text-2xl text-black/75 font-bold uppercase tracking-tight">Lock-In</h2>
           <p className="text-black/60 max-w-xs">
             The ultimate productivity platform for students and professionals to stay focused and achieve their goals.
           </p>
@@ -31,7 +31,7 @@ const Footer = () => {
         <div className="md:col-span-2 grid grid-cols-2 gap-8 lg:gap-10 md:ml-70">
           {/* Platform Section */}
           <div className="flex flex-col gap-4">
-            <h3 className="font-bold uppercase text-sm tracking-wider">Platform</h3>
+            <h3 className="font-bold text-black/75 uppercase text-sm tracking-wider">Platform</h3>
             <ul className="flex flex-col gap-2">
               <li><a href="/" className="text-black/60 hover:text-black">Home</a></li>
               <li><a href="/leaderboard" className="text-black/60 hover:text-black">Leaderboard</a></li>
@@ -42,7 +42,7 @@ const Footer = () => {
 
           {/* Resources Section */}
           <div className="flex flex-col gap-4">
-            <h3 className="font-bold uppercase text-sm tracking-wider">Resources</h3>
+            <h3 className="font-bold text-black/75 uppercase text-sm tracking-wider">Resources</h3>
             <ul className="flex flex-col gap-2">
               <li>
                 <a

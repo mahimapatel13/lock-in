@@ -10,6 +10,7 @@ import (
 	// "fmt"
 	"lock-in/internal/api/rest/auth"
 	"lock-in/internal/api/rest/request"
+	"lock-in/internal/api/rest/response"
 	"lock-in/internal/domain/study_session"
 
 	"github.com/gin-gonic/gin"
@@ -48,8 +49,16 @@ func (h *SessionHandler) GetAllSessions(c *gin.Context) {
 		return
 	}
 
+	resp := make([]response.SessionResponse, 0)
+	for _, s := range sessions {
+		r := s.ToResponse()
+		resp = append(resp, r)
+	}
+
+	log.Println(sessions)
+
 	c.JSON(http.StatusOK, gin.H{
-		"sessions": sessions,
+		"sessions": resp,
 		"message":  "Retrieved Sessions Succesfully!",
 	})
 }

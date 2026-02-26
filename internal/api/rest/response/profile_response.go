@@ -5,8 +5,8 @@ import (
 )
 
 type LoginResponse struct {
-	UUID     uuid.UUID
-	Email    string
-	Username string
+	UUID     uuid.UUID `json:"uuid"`
+	Email    string    `json:"email"`
+	Username string    `json:"username"`
 }
 

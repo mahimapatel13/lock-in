@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Music, Palette } from "lucide-react"
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@radix-ui/react-tooltip";
 import { motion, AnimatePresence } from "framer-motion";
-import { Settings, User, LayoutDashboard,ChartColumn , Trophy, Lock, Users } from "lucide-react"
+import { Settings, User, LayoutDashboard,ChartColumn , Trophy, Lock, Clock, Users } from "lucide-react"
 import { usePomodoro } from "@/context/PomodoroContext";
 import { useEffect,  } from "react";
 import { useLocation, Link } from "react-router-dom";
@@ -20,6 +20,13 @@ const LeftSidebar = () => {
         <div className=" flex flex-col gap-3 px-2 py-4 h-80 border-b-2 border-black/50 overflow-visible">
           <div className="text-black/75 font-bold decoration-2 underline underline-offset-5 text-center text-sm uppercase pb-4">
                 Application
+              </div>
+
+              <div className="flex flex-1 flex-col" >
+                <Link to="/home" className="flex">
+                  <Clock size={18} />
+                  <span className=" pl-2 hover:text-black text-black/70 ">Pomodoro</span>
+                </Link>
               </div>
               {isRoomActive ? (
 

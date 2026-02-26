@@ -165,7 +165,7 @@ func(h *RoomHandler) JoinRoomRequest(c *gin.Context) {
 
 		switch msg.Message["type"]{
 		case "SESSION_STARTED":
-		
+			
 		
 		case "SESSION_ENDED":
 		}
@@ -176,5 +176,4 @@ func(h *RoomHandler) JoinRoomRequest(c *gin.Context) {
 
 	}
 
-	// log.Println("test")
 }

@@ -105,7 +105,7 @@ func (r *studySessionRepository)GetAllSessions(ctx context.Context,userID uuid.U
     log.Println("Getting all sessions for user ", userID, " from db")
 
     
-    rows ,err := r.pool.Query(ctx, "SELECT session_duration, endtime FROM study_schema.study_session WHERE user_id = $1 ORDER BY end_time DESC LIMIT 20", &userID)
+    rows ,err := r.pool.Query(ctx, "SELECT session_duration, end_time FROM study_schema.study_session WHERE user_id = $1 ORDER BY end_time DESC LIMIT 20", &userID)
     
     if err != nil {
         log.Println("Failed to get all sessions")

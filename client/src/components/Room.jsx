@@ -121,15 +121,7 @@ export default function Room() {
         </>
       ) : (
 
-        // <div className="flex flex-col items-center justify-center animate-pulse">
 
-        //        <p className="font-black uppercase text-xs tracking-widest text-zinc-500">
-
-        //         Waiting for partner...
-
-        //       </p>
-
-        //     </div>
         <div className="flex flex-col items-center justify-center h-full space-y-3">
           {/* <div className="w-12 h-12 rounded-full border-4 border-dashed animate-spin border-zinc-300 animate-spin-slow" /> */}
           <p className="font-black uppercase animate-pulse text-[10px] tracking-[0.2em] text-zinc-400">

@@ -36,8 +36,36 @@ export const RoomProvider = ({ children }) => {
   }, []);
 
   const createPeer = useCallback(() => {
-    const peer = new RTCPeerConnection({ 
-      iceServers: [{ urls: "stun:stun.l.google.com:19302" }] 
+    const peer = new RTCPeerConnection({
+      
+      iceServers: [
+        { 
+          urls: "stun:stun.l.google.com:19302"
+        },
+        {
+          urls: "stun:stun.relay.metered.ca:80",
+        },
+        {
+          urls: "turn:global.relay.metered.ca:80",
+          username: import.meta.env.VITE_TURN_PASS,
+          credential: import.meta.env.VITE_TURN_USER,
+        },
+        {
+          urls: "turn:global.relay.metered.ca:80?transport=tcp",
+          username: import.meta.env.VITE_TURN_PASS,
+          credential: import.meta.env.VITE_TURN_USER,
+        },
+        {
+          urls: "turn:global.relay.metered.ca:443",
+          username: import.meta.env.VITE_TURN_PASS,
+          credential: import.meta.env.VITE_TURN_USER,
+        },
+        {
+          urls: "turns:global.relay.metered.ca:443?transport=tcp",
+          username: import.meta.env.VITE_TURN_PASS,
+          credential: import.meta.env.VITE_TURN_USER,
+        },    
+      ] 
     });
     
     peer.onicecandidate = (e) => {
@@ -100,7 +128,7 @@ export const RoomProvider = ({ children }) => {
       const ticketRes = await api.post(`/room/ticket/${targetRoomID}`);
       const { ticket } = ticketRes.data;
 
-      const ws = new WebSocket(`ws://localhost:8080/api/v1/room/ws/${ticket}`);
+      const ws = new WebSocket(import.meta.env.VITE_WS_URL +`/api/v1/room/ws/${ticket}`);
       webSocketRef.current = ws;
       
       ws.onopen = () => ws.send(JSON.stringify({ join: "true" }));

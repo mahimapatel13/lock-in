@@ -69,13 +69,13 @@ const Leaderboard = () => {
 
           <TableBody>
             {isLoading ? (
-              <TableRow>
+              <TableRow className="bg-white">
                 <TableCell colSpan={3} className="py-16 text-center text-black/40 font-bold">
                   Loading Leaderboard...
                 </TableCell>
               </TableRow>
             ) : list.length === 0 ? (
-              <TableRow>
+              <TableRow className="bg-white">
                 <TableCell colSpan={3} className="py-16 text-center text-black/40 font-bold">
                   No data available.
                 </TableCell>
@@ -92,7 +92,7 @@ const Leaderboard = () => {
 
                   <TableCell className="py-4">
                     <div className="flex items-center gap-3">
-                      <Avatar className="h-9 w-9 rounded-md border border-black/40 flex-shrink-0">
+                      <Avatar className="h-9 w-9  border border-black/40 flex-shrink-0">
                         <AvatarImage
                           src={`https://api.dicebear.com/7.x/pixel-art/svg?seed=${player.username}`}
                         />

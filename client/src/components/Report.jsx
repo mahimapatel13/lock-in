@@ -70,13 +70,13 @@ const Report = () => {
 
           <TableBody>
             {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={2} className="py-16 text-center text-black/40 font-bold">
+              <TableRow className="bg-white">
+                <TableCell colSpan={2} className="py-16 text-center  text-black/40 font-bold">
                   Loading Sessions...
                 </TableCell>
               </TableRow>
             ) : sessions.length === 0 ? (
-              <TableRow>
+              <TableRow className="bg-white">
                 <TableCell colSpan={2} className="py-16 text-center text-black/40 font-bold">
                   No sessions found.
                 </TableCell>

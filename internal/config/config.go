@@ -29,6 +29,7 @@ type DatabaseConfig struct {
 	DatabaseName string
 	Host         string
 	Address      string
+	DatabaseURL  string
 }
 
 type JWTConfig struct {
@@ -72,9 +73,8 @@ func loadJWTConfig() JWTConfig {
 	refresh := getEnvValue("REFRESH_SECRET", "DEFAULT_REFRESH_SECRET")
 
 	jwtConfig := JWTConfig{
-		Secret: secret,
+		Secret:        secret,
 		RefreshSecret: refresh,
-
 	}
 
 	return jwtConfig
@@ -88,6 +88,7 @@ func loadDBConfig() DatabaseConfig {
 	host := getEnvValue("DB_HOST", "DEFAULT_DB_HOST")
 	addr := getEnvValue("DB_ADDR", "DEFAULT_DB_ADDR")
 	port := getEnvValue("DB_PORT", "DEFAULT_DB_PORT")
+	url := getEnvValue("DB_URL", "defualt")
 
 	dbConfig := DatabaseConfig{
 		User:         user,
@@ -96,6 +97,7 @@ func loadDBConfig() DatabaseConfig {
 		Host:         host,
 		Address:      addr,
 		Port:         port,
+		DatabaseURL:  url,
 	}
 
 	return dbConfig

@@ -16,6 +16,8 @@ export const RoomProvider = ({ children }) => {
   const webSocketRef = useRef(null);
   const activeRoomId = useRef(null);
 
+  const remoteStreamRef = useRef(new MediaStream());
+
   const leaveRoom = useCallback(() => {
     console.log("Cleanup: Closing all connections");
     if (userStream.current) {
@@ -73,6 +75,29 @@ export const RoomProvider = ({ children }) => {
         webSocketRef.current.send(JSON.stringify({ iceCandidate: e.candidate }));
       }
     };
+
+    // peer.ontrack = (event) => {
+    //   console.log("📡 Remote track received:", event.track.kind);
+
+    //   const remoteStream = remoteStreamRef.current;
+
+    //   // Prevent duplicate tracks
+    //   const existingTrack = remoteStream
+    //     .getTracks()
+    //     .find((t) => t.id === event.track.id);
+
+    //   if (!existingTrack) {
+    //     remoteStream.addTrack(event.track);
+    //   }
+
+    //   // Attach stream safely
+    //   if (partnerVideoRef.current) {
+    //     partnerVideoRef.current.srcObject = remoteStream;
+    //   }
+
+    //   setHasPartner(true);
+    // };
+
 
     peer.ontrack = (e) => {
       console.log("📡 Received remote track:", e.streams[0]);

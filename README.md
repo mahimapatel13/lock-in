@@ -9,5 +9,3 @@ An app that lets users set up focus sessions and personize their experience usin
 - Rankings update @ 9pm everyday.
 - Create a study group with your friends and lock in together!
 - Get reports and analysis of your focus sessions.
-
-![alt text](image.png)

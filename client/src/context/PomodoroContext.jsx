@@ -9,9 +9,9 @@ export const usePomodoro = () => {
 }
 
 const MODES = {
-  STANDARD: { label: "25/5", work: 1, break: 1 },
-  LONG: { label: "50/10", work: 1, break: 1 },
-  DEEP: { label: "90/30", work: 1, break: 1 },
+  STANDARD: { label: "25/5", work: 25, break: 5 },
+  LONG: { label: "50/10", work: 50, break: 10 },
+  DEEP: { label: "90/30", work: 90, break: 30 },
 };
 
 

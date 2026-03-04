@@ -35,7 +35,10 @@ const AuthForm = () => {
         setTouched(prev => ({ ...prev, [field]: true }));
     };
 
-    const isFieldInvalid = (field, value) => touched[field] && !value;
+    const isFieldInvalid = (field, value) => {
+        if (field === 'username') return touched[field] && (!value || value.length < 5);
+        return touched[field] && !value;
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -50,7 +53,7 @@ const AuthForm = () => {
                 await login(email, password);
                 navigate('/home');
             } else {
-                if (!username || !email) throw new Error("Please fill in all fields.");
+                if (username.length < 5|| !username || !email) throw new Error("Please fill in all fields.");
                 await register(email, username);
                 // Success: Switch to success UI instead of browser alert
                 setIsSubmitted(true);
@@ -127,26 +130,7 @@ const AuthForm = () => {
                             </AnimatePresence>
 
                             <div className="space-y-1">
-                                {!isLogin && (
-                                    <div className="flex flex-col">
-                                        <label className="block text-xs text-black/75 font-black uppercase mb-1">Username</label>
-                                        <Input 
-                                            placeholder="username"
-                                            value={username} 
-                                            onChange={(e) => setUsername(e.target.value)}
-                                            onBlur={() => handleBlur('username')}
-                                            className={`border-2 transition-colors focus-visible:ring-0 focus:ring-0 shadow-neo ${isFieldInvalid('username', username) ? 'border-red-500 bg-red-50' : 'border-black/30'}`}
-                                        />
-                                        <div className="h-5 mt-1">
-                                            <AnimatePresence>
-                                                {isFieldInvalid('username', username) && (
-                                                    <motion.p {...errorAnimation} className="text-[10px] font-black text-red-600 uppercase italic">! Username is required</motion.p>
-                                                )}
-                                            </AnimatePresence>
-                                        </div>
-                                    </div>
-                                )}
-
+                               
                                 <div className="flex flex-col">
                                     <label className="block text-xs text-black/75 font-black uppercase mb-1">Email</label>
                                     <Input 
@@ -165,6 +149,27 @@ const AuthForm = () => {
                                         </AnimatePresence>
                                     </div>
                                 </div>
+
+
+                                 {!isLogin && (
+                                    <div className="flex flex-col">
+                                        <label className="block text-xs text-black/75 font-black uppercase mb-1">Username</label>
+                                        <Input 
+                                            placeholder="username"
+                                            value={username} 
+                                            onChange={(e) => setUsername(e.target.value)}
+                                            onBlur={() => handleBlur('username')}
+                                            className={`border-2 transition-colors focus-visible:ring-0 focus:ring-0 shadow-neo ${isFieldInvalid('username', username) ? 'border-red-500 bg-red-50' : 'border-black/30'}`}
+                                        />
+                                        <div className="h-5 mt-1">
+                                            <AnimatePresence>
+                                                {isFieldInvalid('username', username) && (
+                                                    <motion.p {...errorAnimation} className="text-[10px] font-black text-red-600 uppercase italic">! Username should be atleast 5 characters long</motion.p>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
+                                    </div>
+                                )}
 
                                 {isLogin && (
                                     <div className="flex flex-col">

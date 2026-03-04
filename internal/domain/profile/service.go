@@ -212,7 +212,7 @@ func (s *service) RegisterUser(ctx context.Context, user CreateUserRequest) erro
     msg := email.Email{
         To: []string{user.Email},
         Subject: "Welcome to lock-in :)",
-        Body: fmt.Sprintf("Your password to log into your lock-in account is %v.", pass),
+        Body: fmt.Sprintf("Your password to log into your lock-in account is %v", pass),
 
     }
 
